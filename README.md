@@ -1,2 +1,2 @@
-adapt-page-completion-check
-===========================
+adapt-pageIncompletePrompt
+==========================

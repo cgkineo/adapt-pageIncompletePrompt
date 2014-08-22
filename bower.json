@@ -1,11 +1,11 @@
 {
-  "name": "adapt-page-completion-check",
-  "homepage": "",
+  "name": "adapt-pageIncompletePrompt",
+  "homepage": "https://github.com/cgkineo/",
   "authors": [
-    ""
+    "Thomas Taylor <thomas.taylor@kineo.com>"
   ],
   "description": "",
-  "main": "/js/adapt-page-completion-check.js",
+  "main": "/js/adapt-pageIncompletePrompt.js",
   "keywords": [
     "adapt-plugin",
     "adapt-extension"

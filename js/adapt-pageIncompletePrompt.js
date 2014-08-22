@@ -1,3 +1,8 @@
+/*
+* adapt-pageIncompletePrompt
+* License - https://github.com/cgkineo/adapt_framework/blob/master/README.md
+* Maintainers - Thomas Taylor <thomas.taylor@kineo.com>
+*/
 define(function(require) {
 
 	var Adapt = require('coreJS/adapt');
@@ -60,14 +65,14 @@ define(function(require) {
 		if(!allComponentsComplete()) {
 			Adapt.trigger('notify:prompt', promptObject);
 		} else {
-			Adapt.router.set('_canNavigate', true, {pluginName: '_pageCompletionCheck'});
+			Adapt.router.set('_canNavigate', true, {pluginName: '_pageIncompletePrompt'});
 		}
 
 	});
 
 	Adapt.on("pageCompletion:leavePage", function() {
 
-		Adapt.router.set('_canNavigate', true, {pluginName: '_pageCompletionCheck'});
+		Adapt.router.set('_canNavigate', true, {pluginName: '_pageIncompletePrompt'});
 		Adapt.trigger('navigation:backButton');
 
 	});

@@ -1,19 +1,19 @@
 {
-  "name": "adapt-page-completion-check",
+  "name": "adapt-pageIncompletePrompt",
   "version": "0.0.1",
   "description": "",
   "main": "",
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+    "test": ""
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git://github.com/cgkineo/adapt-pageIncompletePrompt.git"
   },
-  "author": "AdaptLearning",
+  "author": "CGKineo",
   "license": "GPL v3",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/cgkineo/adapt-pageIncompletePrompt/issues"
   },
   "devDependencies": {
     "karma": "~0.9",
