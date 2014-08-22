@@ -1,0 +1,2 @@
+adapt-page-completion-check
+===========================

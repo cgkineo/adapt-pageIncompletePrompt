@@ -1,0 +1,14 @@
+{
+  "name": "adapt-page-completion-check",
+  "homepage": "",
+  "authors": [
+    ""
+  ],
+  "description": "",
+  "main": "/js/adapt-page-completion-check.js",
+  "keywords": [
+    "adapt-plugin",
+    "adapt-extension"
+  ],
+  "license": "GPLv3"
+}
