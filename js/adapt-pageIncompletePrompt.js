@@ -1,6 +1,6 @@
 /*
 * adapt-pageIncompletePrompt
-* License - https://github.com/cgkineo/adapt_framework/blob/master/README.md
+* License - https://github.com/cgkineo/adapt_framework/blob/master/LICENSE
 * Maintainers - Thomas Taylor <thomas.taylor@kineo.com>
 */
 define(function(require) {
