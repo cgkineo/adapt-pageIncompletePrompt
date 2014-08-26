@@ -4,7 +4,7 @@
   "authors": [
     "Thomas Taylor <thomas.taylor@kineo.com>"
   ],
-  "description": "",
+  "description": "Displays a prompt if you try and leave a page without having completed all components",
   "main": "/js/adapt-pageIncompletePrompt.js",
   "keywords": [
     "adapt-plugin",

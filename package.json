@@ -1,7 +1,7 @@
 {
   "name": "adapt-pageIncompletePrompt",
   "version": "0.0.1",
-  "description": "",
+  "description": "Displays a prompt if you try and leave a page without having completed all components",
   "main": "",
   "scripts": {
     "test": ""
