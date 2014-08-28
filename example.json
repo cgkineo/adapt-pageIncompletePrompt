@@ -1,0 +1,13 @@
+//course.json
+{
+  "_pageIncompletePrompt": true
+}
+
+
+//and / or (to override)
+
+//contentObjects.json
+
+{
+  "_pageIncompletePrompt" : true
+}
