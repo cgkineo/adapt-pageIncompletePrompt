@@ -7,17 +7,17 @@ define(function(require) {
 	var Adapt = require("coreJS/adapt");
 	var PLUGIN_NAME = "_pageIncompletePrompt";
 	var model;
+	
+	var pageComponents;
 
 	var isEnabled = function() {
 		var pageModel = Adapt.findById(Adapt.location._currentId);
 		var isEnabledForCourse = model && !!model._isEnabled;
-        var isEnabledForPage = pageModel.get("_pageIncompletePrompt") && !!pageModel.get("_pageIncompletePrompt")._isEnabled;        		
+		var isEnabledForPage = pageModel.get("_pageIncompletePrompt") && !!pageModel.get("_pageIncompletePrompt")._isEnabled;        		
 		return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
 	};
 	
 	var allComponentsComplete = function() {
-		var pageModel = Adapt.findById(Adapt.location._currentId);
-		var pageComponents = pageModel.findDescendants("components").where({"_isAvailable": true});
 		var allComplete = true;
 		
 		_.each(pageComponents, function(component) {
@@ -61,6 +61,11 @@ define(function(require) {
 	
 	Adapt.on("router:page", function(pageView) {
 		if(isEnabled()) enableRouterNav(false);
+	});
+	
+	Adapt.on("pageView:ready", function (){
+		var pageModel = Adapt.findById(Adapt.location._currentId);
+		pageComponents = pageModel.findDescendants("components").where({"_isAvailable": true});
 	});
 	
 	Adapt.on("pageIncompletePrompt:leavePage", function() {
