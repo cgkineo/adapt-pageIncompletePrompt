@@ -33,24 +33,25 @@ define(function(require) {
 		Adapt.router.set("_canNavigate", value,{ pluginName: PLUGIN_NAME });
 	};
 	
-        var handleNav = function(event) {
-                if(!allComponentsComplete()) { 
-                        var promptObject = {
-                                title: model.title,
-                                body: model.message,
-                                _prompts:[{
-                                        promptText: model._buttons.yes,
-                                        _callbackEvent: "pageIncompletePrompt:" + event,
-                                },{
-                                        promptText: model._buttons.no,
-                                        _callbackEvent: ""
-                                }],
-                                _showIcon: true
-                        }
-                        Adapt.trigger("notify:prompt", promptObject);
+    var handleNav = function(event) {
+        if(!allComponentsComplete()) { 
+        		handlingRoute = true;
+                var promptObject = {
+                        title: model.title,
+                        body: model.message,
+                        _prompts:[{
+                                promptText: model._buttons.yes,
+                                _callbackEvent: "pageIncompletePrompt:" + event,
+                        },{
+                                promptText: model._buttons.no,
+                                _callbackEvent: ""
+                        }],
+                        _showIcon: true
                 }
-                else enableRouterNav(true);
-        };	
+                Adapt.trigger("notify:prompt", promptObject);
+        }
+        else enableRouterNav(true);
+    };	
 	/**
 	* Adapt events
 	*/
@@ -72,20 +73,26 @@ define(function(require) {
 		enableRouterNav(true);
 		Adapt.trigger("navigation:backButton");
 	});
+
+	var handlingRoute = false;
        
-        Adapt.on("navigation:backButton", function() {
-                handleNav("backButton");
-        });
-        Adapt.on("navigation:menuButton", function() {
-                handleNav("menuButton");
-        });
-       
-        Adapt.on("pageIncompletePrompt:backButton", function() {
-                enableRouterNav(true);
-                Adapt.trigger("navigation:backButton");
-        });
-        Adapt.on("pageIncompletePrompt:menuButton", function() {
-                enableRouterNav(true);
-                Adapt.trigger("navigation:menuButton");
-        });	
+    Adapt.on("navigation:backButton", function() {
+    	if (handlingRoute) return;
+        handleNav("backButton");
+    });
+    Adapt.on("navigation:menuButton", function() {
+    	if (handlingRoute) return;
+        handleNav("menuButton");
+    });
+   
+    Adapt.on("pageIncompletePrompt:backButton", function() {
+        enableRouterNav(true);
+        Adapt.trigger("navigation:backButton");
+        handlingRoute = false;
+    });
+    Adapt.on("pageIncompletePrompt:menuButton", function() {
+        enableRouterNav(true);
+        Adapt.trigger("navigation:menuButton");
+        handlingRoute = false;
+    });	
 });
