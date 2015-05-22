@@ -44,7 +44,7 @@ define(function(require) {
                                 _callbackEvent: "pageIncompletePrompt:" + event,
                         },{
                                 promptText: model._buttons.no,
-                                _callbackEvent: ""
+                                _callbackEvent: "pageIncompletePrompt:cancel"
                         }],
                         _showIcon: true
                 }
@@ -60,13 +60,11 @@ define(function(require) {
 		model = Adapt.course.get(PLUGIN_NAME);
 	});
 	
-	Adapt.on("router:page", function(pageView) {
-		if(isEnabled()) enableRouterNav(false);
-	});
 	
 	Adapt.on("pageView:ready", function (){
 		var pageModel = Adapt.findById(Adapt.location._currentId);
 		pageComponents = pageModel.findDescendants("components").where({"_isAvailable": true});
+		if(isEnabled() && !allComponentsComplete()) enableRouterNav(false);
 	});
 	
 	Adapt.on("pageIncompletePrompt:leavePage", function() {
@@ -93,6 +91,9 @@ define(function(require) {
     Adapt.on("pageIncompletePrompt:menuButton", function() {
         enableRouterNav(true);
         Adapt.trigger("navigation:menuButton");
+        handlingRoute = false;
+    });	
+    Adapt.on("pageIncompletePrompt:cancel", function() {
         handlingRoute = false;
     });	
 });
