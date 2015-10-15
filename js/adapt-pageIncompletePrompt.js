@@ -1,99 +1,111 @@
-/*
-* adapt-pageIncompletePrompt
-* License - https://github.com/cgkineo/adapt_framework/blob/master/LICENSE
-* Maintainers - Thomas Taylor <thomas.taylor@kineo.com>
-*/
-define(function(require) {
-	var Adapt = require("coreJS/adapt");
-	var PLUGIN_NAME = "_pageIncompletePrompt";
-	var model;
-	
-	var pageComponents;
+define([
+	'coreJS/adapt'
+], function(Adapt) {
 
-	var isEnabled = function() {
-		var pageModel = Adapt.findById(Adapt.location._currentId);
-		var isEnabledForCourse = model && !!model._isEnabled;
-		var isEnabledForPage = pageModel.get("_pageIncompletePrompt") && !!pageModel.get("_pageIncompletePrompt")._isEnabled;        		
-		return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
-	};
-	
-	var allComponentsComplete = function() {
-		var allComplete = true;
-		
-		_.each(pageComponents, function(component) {
-			var hasPageProgress = component.get("_pageLevelProgress") && component.get("_pageLevelProgress")._isEnabled;
-			var isComplete = component.get("_isComplete");
-			if(hasPageProgress && !isComplete) allComplete = false;
-		});
-		
-		return allComplete;
-	};
-	
-	var enableRouterNav = function(value) {
-		Adapt.router.set("_canNavigate", value,{ pluginName: PLUGIN_NAME });
-	};
-	
-    var handleNav = function(event) {
-        if(!allComponentsComplete()) { 
-        		handlingRoute = true;
-                var promptObject = {
-                        title: model.title,
-                        body: model.message,
-                        _prompts:[{
-                                promptText: model._buttons.yes,
-                                _callbackEvent: "pageIncompletePrompt:" + event,
-                        },{
-                                promptText: model._buttons.no,
-                                _callbackEvent: "pageIncompletePrompt:cancel"
-                        }],
-                        _showIcon: true
-                }
-                Adapt.trigger("notify:prompt", promptObject);
-        }
-        else enableRouterNav(true);
-    };	
-	/**
-	* Adapt events
-	*/
-	
-	Adapt.on("app:dataLoaded", function() {
-		model = Adapt.course.get(PLUGIN_NAME);
-	});
-	
-	
-	Adapt.on("pageView:ready", function (){
-		var pageModel = Adapt.findById(Adapt.location._currentId);
-		pageComponents = pageModel.findDescendants("components").where({"_isAvailable": true});
-		if(isEnabled() && !allComponentsComplete()) enableRouterNav(false);
-	});
-	
-	Adapt.on("pageIncompletePrompt:leavePage", function() {
-		enableRouterNav(true);
-		Adapt.trigger("navigation:backButton");
-	});
 
-	var handlingRoute = false;
-       
-    Adapt.on("navigation:backButton", function() {
-    	if (handlingRoute) return;
-        handleNav("backButton");
-    });
-    Adapt.on("navigation:menuButton", function() {
-    	if (handlingRoute) return;
-        handleNav("menuButton");
-    });
-   
-    Adapt.on("pageIncompletePrompt:backButton", function() {
-        enableRouterNav(true);
-        Adapt.trigger("navigation:backButton");
-        handlingRoute = false;
-    });
-    Adapt.on("pageIncompletePrompt:menuButton", function() {
-        enableRouterNav(true);
-        Adapt.trigger("navigation:menuButton");
-        handlingRoute = false;
-    });	
-    Adapt.on("pageIncompletePrompt:cancel", function() {
-        handlingRoute = false;
-    });	
+	var PageIncompletePrompt = _.extend({
+		PLUGIN_NAME: "_pageIncompletePrompt",
+
+		handleRoute: true,
+		pageComponents: null,
+		routeArguments: null,
+		model: null,
+
+		initialize: function() {
+			this.setupEventListeners();
+		},
+
+		setupEventListeners: function() {
+			this.listenToOnce(Adapt, "app:dataLoaded", this.setupModel);
+			this.listenTo(Adapt, "pageView:ready", this.onPageViewReady);
+			this.listenTo(Adapt, "pageIncompletePrompt:leavePage", this.onLeavePage);
+			this.listenTo(Adapt, "pageIncompletePrompt:cancel", this.onLeaveCancel);
+			this.listenTo(Adapt, "router:navigate", this.onRouterNavigate);
+		},
+
+		setupModel: function() {
+			this.model = Adapt.course.get(this.PLUGIN_NAME);
+		},
+
+		onPageViewReady: function() {
+			var pageModel = Adapt.findById(Adapt.location._currentId);
+			this.pageComponents = pageModel.findDescendants("components").where({"_isAvailable": true});
+		},
+
+		onLeavePage: function() {
+			this.enableRouterNavigation(true);
+			this.handleRoute = false;
+
+			//this api needs sorting out in adapt, i hadn't realized it was so awkward - ollie
+			var routeArguments = [].slice.call(this.routeArguments, 0, this.routeArguments.length);
+			routeArguments.unshift("router:navigateTo");
+			Adapt.trigger.apply(Adapt, routeArguments);
+
+
+			this.handleRoute = true;
+		},
+
+		onLeaveCancel: function() {
+			this.routeArguments = undefined;
+			this.enableRouterNavigation(true);
+			this.handleRoute = true;
+		},
+
+		onRouterNavigate: function(routeArguments) {
+			if(!this.isEnabled() || this.allComponentsComplete()) return;
+
+			this.enableRouterNavigation(false)
+			this.routeArguments = routeArguments;
+	        var promptObject = {
+	                title: this.model.title,
+	                body: this.model.message,
+	                _prompts:[{
+	                        promptText: this.model._buttons.yes,
+	                        _callbackEvent: "pageIncompletePrompt:leavePage",
+	                },{
+	                        promptText: this.model._buttons.no,
+	                        _callbackEvent: "pageIncompletePrompt:cancel"
+	                }],
+	                _showIcon: true
+	        }
+	        Adapt.trigger("notify:prompt", promptObject);
+		},
+
+		isEnabled: function() {
+			if (!Adapt.location._currentId) return false;
+			if (!this.handleRoute) return false;
+			switch (Adapt.location._contentType) {
+			case "menu": case "course":
+				return false;
+			}
+			var pageModel = Adapt.findById(Adapt.location._currentId);
+			if (pageModel.get("_isOptional")) return false;
+			var isEnabledForCourse = this.model && !!this.model._isEnabled;
+			var isEnabledForPage = pageModel.get("_pageIncompletePrompt") && !!pageModel.get("_pageIncompletePrompt")._isEnabled;        		
+			return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
+		},
+
+
+		allComponentsComplete: function() {
+			var allComplete = true;
+			
+			_.each(this.pageComponents, function(component) {
+				var hasPageProgress = component.get("_pageLevelProgress") && component.get("_pageLevelProgress")._isEnabled;
+				var isComplete = component.get("_isComplete");
+				if(hasPageProgress && !isComplete) allComplete = false;
+			});
+			
+			return allComplete;
+		},
+
+		enableRouterNavigation: function(value) {
+			Adapt.router.set("_canNavigate", value, { pluginName: this.PLUGIN_NAME });
+		}
+
+	}, Backbone.Events);
+
+	PageIncompletePrompt.initialize();
+
+	return PageIncompletePrompt;
+
 });
