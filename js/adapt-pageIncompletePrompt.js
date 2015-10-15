@@ -4,6 +4,7 @@ define([
 
 
 	var PageIncompletePrompt = _.extend({
+		
 		PLUGIN_NAME: "_pageIncompletePrompt",
 
 		handleRoute: true,
@@ -56,19 +57,19 @@ define([
 
 			this.enableRouterNavigation(false)
 			this.routeArguments = routeArguments;
-	        var promptObject = {
-	                title: this.model.title,
-	                body: this.model.message,
-	                _prompts:[{
-	                        promptText: this.model._buttons.yes,
-	                        _callbackEvent: "pageIncompletePrompt:leavePage",
-	                },{
-	                        promptText: this.model._buttons.no,
-	                        _callbackEvent: "pageIncompletePrompt:cancel"
-	                }],
-	                _showIcon: true
-	        }
-	        Adapt.trigger("notify:prompt", promptObject);
+		        var promptObject = {
+		                title: this.model.title,
+		                body: this.model.message,
+		                _prompts:[{
+		                        promptText: this.model._buttons.yes,
+		                        _callbackEvent: "pageIncompletePrompt:leavePage",
+		                },{
+		                        promptText: this.model._buttons.no,
+		                        _callbackEvent: "pageIncompletePrompt:cancel"
+		                }],
+		                _showIcon: true
+		        }
+		        Adapt.trigger("notify:prompt", promptObject);
 		},
 
 		isEnabled: function() {
@@ -84,7 +85,6 @@ define([
 			var isEnabledForPage = pageModel.get("_pageIncompletePrompt") && !!pageModel.get("_pageIncompletePrompt")._isEnabled;        		
 			return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
 		},
-
 
 		allComponentsComplete: function() {
 			var allComplete = true;
