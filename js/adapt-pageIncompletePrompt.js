@@ -9,6 +9,7 @@ define([
 
         handleRoute: true,
         pageComponents: null,
+        pageModel: null,
         routeArguments: null,
         model: null,
 
@@ -29,19 +30,15 @@ define([
         },
 
         onPageViewReady: function() {
-            var pageModel = Adapt.findById(Adapt.location._currentId);
-            this.pageComponents = pageModel.findDescendants("components").where({"_isAvailable": true});
+            this.pageModel = Adapt.findById(Adapt.location._currentId);
+            this.pageComponents = this.pageModel.findDescendants("components").where({"_isAvailable": true});
         },
 
         onLeavePage: function() {
             this.enableRouterNavigation(true);
             this.handleRoute = false;
 
-            //this api needs sorting out in adapt, i hadn't realized it was so awkward - ollie
-            var routeArguments = [].slice.call(this.routeArguments, 0, this.routeArguments.length);
-            routeArguments.unshift("router:navigateTo");
-            Adapt.trigger.apply(Adapt, routeArguments);
-
+            Adapt.trigger("router:navigateTo", this.routeArguments);
 
             this.handleRoute = true;
         },
