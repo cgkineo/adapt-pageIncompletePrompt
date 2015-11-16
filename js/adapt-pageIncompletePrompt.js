@@ -13,6 +13,8 @@ define([
         routeArguments: null,
         model: null,
 
+        _ignoreAccessibilityNavigation: false,
+
         initialize: function() {
             this.setupEventListeners();
         },
@@ -23,6 +25,7 @@ define([
             this.listenTo(Adapt, "pageIncompletePrompt:leavePage", this.onLeavePage);
             this.listenTo(Adapt, "pageIncompletePrompt:cancel", this.onLeaveCancel);
             this.listenTo(Adapt, "router:navigate", this.onRouterNavigate);
+            this.listenTo(Adapt, "accessibility:toggle", this.onAccessibilityToggle);
         },
 
         setupModel: function() {
@@ -35,6 +38,8 @@ define([
         },
 
         onLeavePage: function() {
+
+
             this.enableRouterNavigation(true);
             this.handleRoute = false;
 
@@ -52,40 +57,49 @@ define([
         onRouterNavigate: function(routeArguments) {
             if(!this.isEnabled() || this.allComponentsComplete()) return;
 
+            if (this._ignoreAccessibilityNavigation) {
+                this._ignoreAccessibilityNavigation = false;
+                return;
+            }
+
             this.enableRouterNavigation(false)
             this.routeArguments = routeArguments;
             
             var promptObject;
-		var pageIncompletePromptConfig = this.pageModel.get("_pageIncompletePrompt");
-		if (pageIncompletePromptConfig && pageIncompletePromptConfig._buttons) {
-			promptObject = {
-				title: pageIncompletePromptConfig.title,
-				body: pageIncompletePromptConfig.message,
-				_prompts:[{
-				        promptText: pageIncompletePromptConfig._buttons.yes,
-				        _callbackEvent: "pageIncompletePrompt:leavePage",
-				},{
-				        promptText: pageIncompletePromptConfig._buttons.no,
-				        _callbackEvent: "pageIncompletePrompt:cancel"
-				}],
-				_showIcon: true
-			};
-		} else {
-			promptObject = {
-				title: this.model.title,
-				body: this.model.message,
-				_prompts:[{
-				        promptText: this.model._buttons.yes,
-				        _callbackEvent: "pageIncompletePrompt:leavePage",
-				},{
-				        promptText: this.model._buttons.no,
-				        _callbackEvent: "pageIncompletePrompt:cancel"
-				}],
-				_showIcon: true
-			};
-		}
+    		var pageIncompletePromptConfig = this.pageModel.get("_pageIncompletePrompt");
+    		if (pageIncompletePromptConfig && pageIncompletePromptConfig._buttons) {
+    			promptObject = {
+    				title: pageIncompletePromptConfig.title,
+    				body: pageIncompletePromptConfig.message,
+    				_prompts:[{
+    				        promptText: pageIncompletePromptConfig._buttons.yes,
+    				        _callbackEvent: "pageIncompletePrompt:leavePage",
+    				},{
+    				        promptText: pageIncompletePromptConfig._buttons.no,
+    				        _callbackEvent: "pageIncompletePrompt:cancel"
+    				}],
+    				_showIcon: true
+    			};
+    		} else {
+    			promptObject = {
+    				title: this.model.title,
+    				body: this.model.message,
+    				_prompts:[{
+    				        promptText: this.model._buttons.yes,
+    				        _callbackEvent: "pageIncompletePrompt:leavePage",
+    				},{
+    				        promptText: this.model._buttons.no,
+    				        _callbackEvent: "pageIncompletePrompt:cancel"
+    				}],
+    				_showIcon: true
+    			};
+    		}
 
             Adapt.trigger("notify:prompt", promptObject);
+        },
+
+        onAccessibilityToggle: function() {
+            this._ignoreAccessibilityNavigation = true;
         },
 
         isEnabled: function() {
