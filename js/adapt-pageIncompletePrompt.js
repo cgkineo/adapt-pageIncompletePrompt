@@ -8,6 +8,7 @@ define([
         PLUGIN_NAME: "_pageIncompletePrompt",
 
         handleRoute: true,
+        inPage: false,
         pageComponents: null,
         pageModel: null,
         routeArguments: null,
@@ -33,15 +34,16 @@ define([
         },
 
         onPageViewReady: function() {
+            this.inPage = true;
             this.pageModel = Adapt.findById(Adapt.location._currentId);
             this.pageComponents = this.pageModel.findDescendants("components").where({"_isAvailable": true});
         },
 
         onLeavePage: function() {
 
-
             this.enableRouterNavigation(true);
             this.handleRoute = false;
+            this.inPage = false;
 
             Adapt.trigger("router:navigateTo", this.routeArguments);
 
@@ -56,6 +58,17 @@ define([
 
         onRouterNavigate: function(routeArguments) {
             if(!this.isEnabled() || this.allComponentsComplete()) return;
+
+            if (routeArguments[0]) {
+                //check if routing to current page child
+                //exit if on same page
+                try {
+                    var id = routeArguments[0];
+                    var model = Adapt.findById(id);
+                    var parent = model.findAncestor("contentObjects");
+                    if (parent.get("_id") == this.pageModel.get("_id")) return;
+                } catch (e) {}
+            }
 
             if (this._ignoreAccessibilityNavigation) {
                 this._ignoreAccessibilityNavigation = false;
@@ -105,6 +118,7 @@ define([
         isEnabled: function() {
             if (!Adapt.location._currentId) return false;
             if (!this.handleRoute) return false;
+            if (!this.inPage) return false;
             switch (Adapt.location._contentType) {
             case "menu": case "course":
                 return false;
