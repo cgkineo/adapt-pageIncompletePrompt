@@ -9,6 +9,7 @@ define([
 
         handleRoute: true,
         inPage: false,
+        inPopup: false,
         pageComponents: null,
         pageModel: null,
         routeArguments: null,
@@ -40,6 +41,8 @@ define([
         },
 
         onLeavePage: function() {
+            if (!this.inPopup) return;
+            this.inPopup = false;
 
             this.enableRouterNavigation(true);
             this.handleRoute = false;
@@ -51,9 +54,11 @@ define([
         },
 
         onLeaveCancel: function() {
+            if (!this.inPopup) return;
             this.routeArguments = undefined;
             this.enableRouterNavigation(true);
             this.handleRoute = true;
+            this.inPopup = false;
         },
 
         onRouterNavigate: function(routeArguments) {
@@ -77,6 +82,7 @@ define([
 
             this.enableRouterNavigation(false)
             this.routeArguments = routeArguments;
+            this.inPopup = true;
             
             var promptObject;
     		var pageIncompletePromptConfig = this.pageModel.get("_pageIncompletePrompt");
@@ -108,6 +114,8 @@ define([
     			};
     		}
 
+            this.listenToOnce(Adapt, "notify:closed", this.onLeaveCancel);
+
             Adapt.trigger("notify:prompt", promptObject);
         },
 
@@ -119,6 +127,8 @@ define([
             if (!Adapt.location._currentId) return false;
             if (!this.handleRoute) return false;
             if (!this.inPage) return false;
+            if (this.inPopup) return;
+            
             switch (Adapt.location._contentType) {
             case "menu": case "course":
                 return false;
