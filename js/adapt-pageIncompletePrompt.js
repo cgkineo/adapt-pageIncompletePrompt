@@ -27,11 +27,11 @@ define([
             this.listenTo(Adapt, "pageIncompletePrompt:leavePage", this.onLeavePage);
             this.listenTo(Adapt, "pageIncompletePrompt:cancel", this.onLeaveCancel);
             this.listenTo(Adapt, "router:navigate", this.onRouterNavigate);
-            this.listenTo(Adapt, "accessibility:toggle", this.onAccessibilityToggle);
         },
 
         setupModel: function() {
             this.model = Adapt.course.get(this.PLUGIN_NAME);
+            this.listenTo(Adapt, "accessibility:toggle", this.onAccessibilityToggle);
         },
 
         onPageViewReady: function() {
@@ -120,14 +120,21 @@ define([
         },
 
         onAccessibilityToggle: function() {
-            this._ignoreAccessibilityNavigation = true;
+            if (Adapt.device.touch) {
+                //accessibility is always on for touch devices
+                //ignore toggle
+                this._ignoreAccessibilityNavigation = false;
+            } else {
+                //skip renavigate for accessibility on desktop
+                this._ignoreAccessibilityNavigation = true;
+            }
         },
 
         isEnabled: function() {
             if (!Adapt.location._currentId) return false;
             if (!this.handleRoute) return false;
             if (!this.inPage) return false;
-            if (this.inPopup) return;
+            if (this.inPopup) return false;
             
             switch (Adapt.location._contentType) {
             case "menu": case "course":
