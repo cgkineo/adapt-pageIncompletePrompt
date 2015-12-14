@@ -138,6 +138,7 @@ define([
             
             switch (Adapt.location._contentType) {
             case "menu": case "course":
+                this.inPage = false;
                 return false;
             }
             var pageModel = Adapt.findById(Adapt.location._currentId);
