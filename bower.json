@@ -1,14 +1,17 @@
 {
-  "name": "adapt-pageIncompletePrompt",
-  "homepage": "https://github.com/cgkineo/",
-  "authors": [
-    "Thomas Taylor <thomas.taylor@kineo.com>"
-  ],
-  "description": "Displays a prompt if you try and leave a page without having completed all components",
-  "main": "/js/adapt-pageIncompletePrompt.js",
-  "keywords": [
-    "adapt-plugin",
-    "adapt-extension"
-  ],
-  "license": "GPLv3"
+    "name": "adapt-pageIncompletePrompt",
+    "repository": "git://github.com/cgkineo/adapt-pageIncompletePrompt",
+    "framework": "^2.0.0",
+    "version": "2.0.1",
+    "homepage": "https://github.com/cgkineo/adapt-pageIncompletePrompt",
+    "issues": "https://github.com/cgkineo/adapt-pageIncompletePrompt/issues/",
+    "displayName": "Page Incomplete Prompt",
+    "extension": "pageIncompletePrompt",
+    "description": "Displays a prompt if you try and leave a page without having completed all components",
+    "main": "/js/adapt-pageIncompletePrompt.js",
+    "keywords": [
+        "adapt-plugin",
+        "adapt-extension"
+    ],
+    "license": "GPLv3"
 }
