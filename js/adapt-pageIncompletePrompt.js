@@ -44,6 +44,7 @@ define([
             if (!this.inPopup) return;
             this.inPopup = false;
 
+            this.stopListening(Adapt, "notify:cancelled");
             this.enableRouterNavigation(true);
             this.handleRoute = false;
             this.inPage = false;
@@ -55,13 +56,16 @@ define([
 
         onLeaveCancel: function() {
             if (!this.inPopup) return;
+            this.inPopup = false;
+            
+            this.stopListening(Adapt, "notify:cancelled");
             this.routeArguments = undefined;
             this.enableRouterNavigation(true);
             this.handleRoute = true;
-            this.inPopup = false;
         },
 
         onRouterNavigate: function(routeArguments) {
+            
             if(!this.isEnabled() || this.allComponentsComplete()) return;
 
             if (routeArguments[0]) {
@@ -114,7 +118,7 @@ define([
     			};
     		}
 
-            this.listenToOnce(Adapt, "notify:closed", this.onLeaveCancel);
+            this.listenToOnce(Adapt, "notify:cancelled", this.onLeaveCancel);
 
             Adapt.trigger("notify:prompt", promptObject);
         },
@@ -149,15 +153,18 @@ define([
         },
 
         allComponentsComplete: function() {
-            var allComplete = true;
             
-            _.each(this.pageComponents, function(component) {
-                var hasPageProgress = component.get("_pageLevelProgress") && component.get("_pageLevelProgress")._isEnabled;
+            if(this.pageComponents === null) return true;
+            
+            for(var i = 0, count = this.pageComponents.length; i < count; i++) {
+                var component  = this.pageComponents[i];
+                var isMandatory = (component.get('_isOptional') === false);
                 var isComplete = component.get("_isComplete");
-                if(hasPageProgress && !isComplete) allComplete = false;
-            });
             
-            return allComplete;
+                if(isMandatory && !isComplete) return false;   
+            }
+            
+            return true;
         },
 
         enableRouterNavigation: function(value) {
