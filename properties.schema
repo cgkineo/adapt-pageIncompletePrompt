@@ -14,7 +14,7 @@
         "course": {
           "type":"object",
           "properties":{
-            "_pageLevelProgress": {
+            "_pageIncompletePrompt": {
               "type": "object",
               "required": false,
               "legend": "Page Incomplete Prompt",
