@@ -28,6 +28,24 @@
                   "validators": [],
                   "help": "Set to true to enable this extension globally; false to disable it. This setting can be overridden at page level if you need."
                 },
+		            "title": {
+                  "type": "string",
+                  "required": true,
+                  "default": "Page incomplete",
+                  "title": "Prompt title",
+                  "inputType": "text",
+                  "validators": [],
+                  "translatable": true
+                },
+                "message": {
+                  "type": "string",
+                  "required": true,
+                  "default": "Are you sure you would like to leave?",
+                  "title": "Prompt message",
+                  "inputType": "text",
+                  "validators": [],
+                  "translatable": true
+                },
                 "_buttons": {
                   "type": "object",
                   "required":true,
