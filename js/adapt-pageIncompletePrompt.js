@@ -36,7 +36,9 @@ define([
         onPageViewReady: function() {
             this.inPage = true;
             this.pageModel = Adapt.findById(Adapt.location._currentId);
-            this.pageComponents = this.pageModel.findDescendants("components").where({"_isAvailable": true});
+            this.pageComponents = _.filter(this.pageModel.findDescendantModels("components"), function(item) {
+                return item.get("_isAvailable") === true;
+            });
         },
 
         onLeavePage: function() {
