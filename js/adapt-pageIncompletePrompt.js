@@ -12,7 +12,6 @@ define([
         inPopup: false,
         pageComponents: null,
         pageModel: null,
-        routeArguments: null,
         model: null,
 
         _ignoreAccessibilityNavigation: false,
@@ -49,7 +48,7 @@ define([
             this.handleRoute = false;
             this.inPage = false;
 
-            Adapt.trigger("router:navigateTo", this.routeArguments);
+            window.location.href = this.href;
 
             this.handleRoute = true;
         },
@@ -59,7 +58,6 @@ define([
             this.inPopup = false;
             
             this.stopListening(Adapt, "notify:cancelled");
-            this.routeArguments = undefined;
             this.enableRouterNavigation(true);
             this.handleRoute = true;
         },
@@ -67,6 +65,8 @@ define([
         onRouterNavigate: function(routeArguments) {
             
             if(!this.isEnabled() || this.allComponentsComplete()) return;
+
+            this.href = window.location.href;
 
             if (routeArguments[0]) {
                 //check if routing to current page child
@@ -85,7 +85,6 @@ define([
             }
 
             this.enableRouterNavigation(false)
-            this.routeArguments = routeArguments;
             this.inPopup = true;
             
             var promptObject;
