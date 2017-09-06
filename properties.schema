@@ -1,19 +1,19 @@
 {
-  "type":"object",
+  "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema",
   "id": "http://jsonschema.net",
-  "required":false,
+  "required": false,
   "properties":{
     "pluginLocations": {
-      "type":"object",
-      "required":true,
-      "properties":{
+      "type": "object",
+      "required": true,
+      "properties": {
         "config": {
-          "type":"object"
+          "type": "object"
         },
         "course": {
-          "type":"object",
-          "properties":{
+          "type": "object",
+          "properties": {
             "_pageIncompletePrompt": {
               "type": "object",
               "required": false,
@@ -21,12 +21,11 @@
               "properties": {
                 "_isEnabled": {
                   "type": "boolean",
-                  "required":true,
+                  "required": true,
                   "default": true,
                   "title": "Enabled?",
-                  "inputType": {"type": "Boolean", "options": [true, false]},
-                  "validators": [],
-                  "help": "Set to true to enable this extension globally; false to disable it. This setting can be overridden at page level if you need."
+                  "inputType": "Checkbox",
+                  "validators": []
                 },
                 "title": {
                   "type": "string",
@@ -76,8 +75,8 @@
           }
         },
         "contentobject": {
-          "type":"object",
-          "properties":{
+          "type": "object",
+          "properties": {
             "_pageIncompletePrompt": {
               "type": "object",
               "required": false,
@@ -85,10 +84,10 @@
               "properties": {
                 "_isEnabled": {
                   "type": "boolean",
-                  "required":true,
+                  "required": true,
                   "default": true,
                   "title": "Enabled?",
-                  "inputType": {"type": "Boolean", "options": [true, false]},
+                  "inputType": "Checkbox",
                   "validators": [],
                   "help": "Whether Page Incomplete Prompt is enabled for this page or not. This is setting is only required if you want this page to override the global setting."
                 }
@@ -97,13 +96,13 @@
           }
         },
         "article": {
-          "type":"object"
+          "type": "object"
         },
         "block": {
-          "type":"object"
+          "type": "object"
         },
         "component": {
-          "type":"object"
+          "type": "object"
         }
       }
     }
