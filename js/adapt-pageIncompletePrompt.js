@@ -1,7 +1,6 @@
 define([
-    'coreJS/adapt'
+    'core/js/adapt'
 ], function(Adapt) {
-
 
     var PageIncompletePrompt = _.extend({
         
@@ -22,10 +21,12 @@ define([
 
         setupEventListeners: function() {
             this.listenToOnce(Adapt, "app:dataLoaded", this.setupModel);
-            this.listenTo(Adapt, "pageView:ready", this.onPageViewReady);
-            this.listenTo(Adapt, "pageIncompletePrompt:leavePage", this.onLeavePage);
-            this.listenTo(Adapt, "pageIncompletePrompt:cancel", this.onLeaveCancel);
-            this.listenTo(Adapt, "router:navigate", this.onRouterNavigate);
+            this.listenTo(Adapt, {
+                "pageView:ready": this.onPageViewReady,
+                "pageIncompletePrompt:leavePage": this.onLeavePage,
+                "pageIncompletePrompt:cancel": this.onLeaveCancel,
+                "router:navigate": this.onRouterNavigate
+            });
         },
 
         setupModel: function() {
@@ -86,7 +87,8 @@ define([
                 return;
             }
 
-            this.enableRouterNavigation(false)
+            this.enableRouterNavigation(false);
+
             this.inPopup = true;
             
             var promptObject;
