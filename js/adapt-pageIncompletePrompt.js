@@ -2,6 +2,7 @@ define([
     'core/js/adapt'
 ], function(Adapt) {
 
+
     var PageIncompletePrompt = _.extend({
         
         PLUGIN_NAME: "_pageIncompletePrompt",
@@ -9,6 +10,7 @@ define([
         handleRoute: true,
         inPage: false,
         inPopup: false,
+        isChangingLanguage: false,
         pageComponents: null,
         pageModel: null,
         model: null,
@@ -20,18 +22,36 @@ define([
         },
 
         setupEventListeners: function() {
-            this.listenToOnce(Adapt, "app:dataLoaded", this.setupModel);
             this.listenTo(Adapt, {
+                "app:languageChanged": this.onLanguageChanging,
                 "pageView:ready": this.onPageViewReady,
                 "pageIncompletePrompt:leavePage": this.onLeavePage,
                 "pageIncompletePrompt:cancel": this.onLeaveCancel,
                 "router:navigate": this.onRouterNavigate
             });
+
+            this.listenToOnce(Adapt, "app:dataLoaded", function() {
+                this.setupModel();
+                this.listenTo(Adapt, "accessibility:toggle", this.onAccessibilityToggle);
+            });
+        },
+
+        /**
+         * suppresses the prompt if the user changes language whilst in a page, then re-enables
+         * it once the language has been changed and we've navigated back to a page
+         */
+        onLanguageChanging: function() {
+            this.isChangingLanguage = true;
+
+            this.setupModel();
+            
+            Adapt.once('router:page', function() {
+                this.isChangingLanguage = false;
+            }.bind(this));
         },
 
         setupModel: function() {
             this.model = Adapt.course.get(this.PLUGIN_NAME);
-            this.listenTo(Adapt, "accessibility:toggle", this.onAccessibilityToggle);
         },
 
         onPageViewReady: function() {
@@ -142,6 +162,7 @@ define([
             if (!this.handleRoute) return false;
             if (!this.inPage) return false;
             if (this.inPopup) return false;
+            if (this.isChangingLanguage) return false;
             
             switch (Adapt.location._contentType) {
             case "menu": case "course":
@@ -151,7 +172,7 @@ define([
             var pageModel = Adapt.findById(Adapt.location._currentId);
             if (pageModel.get("_isOptional")) return false;
             var isEnabledForCourse = this.model && !!this.model._isEnabled;
-            var isEnabledForPage = pageModel.get("_pageIncompletePrompt") && !!pageModel.get("_pageIncompletePrompt")._isEnabled;               
+            var isEnabledForPage = pageModel.get("_pageIncompletePrompt") && !!pageModel.get("_pageIncompletePrompt")._isEnabled;
             return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
         },
 
@@ -164,7 +185,7 @@ define([
                 var isMandatory = (component.get('_isOptional') === false);
                 var isComplete = component.get("_isComplete");
             
-                if(isMandatory && !isComplete) return false;   
+                if(isMandatory && !isComplete) return false;
             }
             
             return true;
