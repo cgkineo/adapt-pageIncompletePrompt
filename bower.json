@@ -2,7 +2,7 @@
     "name": "adapt-pageIncompletePrompt",
     "repository": "git://github.com/cgkineo/adapt-pageIncompletePrompt",
     "framework": ">=2.2",
-    "version": "2.0.6",
+    "version": "2.0.7",
     "homepage": "https://github.com/cgkineo/adapt-pageIncompletePrompt",
     "issues": "https://github.com/cgkineo/adapt-pageIncompletePrompt/issues/",
     "displayName": "Page Incomplete Prompt",

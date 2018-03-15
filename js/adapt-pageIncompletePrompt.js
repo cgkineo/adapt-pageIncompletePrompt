@@ -109,41 +109,7 @@ define([
 
             this.enableRouterNavigation(false);
 
-            this.inPopup = true;
-            
-            var promptObject;
-    		var pageIncompletePromptConfig = this.pageModel.get("_pageIncompletePrompt");
-    		if (pageIncompletePromptConfig && pageIncompletePromptConfig._buttons) {
-    			promptObject = {
-    				title: pageIncompletePromptConfig.title,
-    				body: pageIncompletePromptConfig.message,
-    				_prompts:[{
-    				        promptText: pageIncompletePromptConfig._buttons.yes,
-    				        _callbackEvent: "pageIncompletePrompt:leavePage",
-    				},{
-    				        promptText: pageIncompletePromptConfig._buttons.no,
-    				        _callbackEvent: "pageIncompletePrompt:cancel"
-    				}],
-    				_showIcon: true
-    			};
-    		} else {
-    			promptObject = {
-    				title: this.model.title,
-    				body: this.model.message,
-    				_prompts:[{
-    				        promptText: this.model._buttons.yes,
-    				        _callbackEvent: "pageIncompletePrompt:leavePage",
-    				},{
-    				        promptText: this.model._buttons.no,
-    				        _callbackEvent: "pageIncompletePrompt:cancel"
-    				}],
-    				_showIcon: true
-    			};
-    		}
-
-            this.listenToOnce(Adapt, "notify:cancelled", this.onLeaveCancel);
-
-            Adapt.trigger("notify:prompt", promptObject);
+            this.showPrompt();
         },
 
         onAccessibilityToggle: function() {
@@ -157,6 +123,35 @@ define([
             }
         },
 
+        showPrompt: function() {
+            // standard prompt settings (from course.json)
+            var promptObject = {
+                title: this.model.title,
+                body: this.model.message,
+                _prompts: [{
+                    promptText: this.model._buttons.yes,
+                    _callbackEvent: "pageIncompletePrompt:leavePage",
+                }, {
+                    promptText: this.model._buttons.no,
+                    _callbackEvent: "pageIncompletePrompt:cancel"
+                }],
+                _showIcon: true
+            };
+
+            // override with page-specific settings?
+            var pipConfig = this.pageModel.get("_pageIncompletePrompt");
+            if (pipConfig && pipConfig._buttons) {
+                promptObject.title = pipConfig.title;
+                promptObject.body = pipConfig.message;
+                promptObject._prompts[0].promptText = pipConfig._buttons.yes;
+                promptObject._prompts[1].promptText = pipConfig._buttons.no;
+            }
+
+            this.listenToOnce(Adapt, "notify:cancelled", this.onLeaveCancel);
+            Adapt.trigger("notify:prompt", promptObject);
+            this.inPopup = true;
+        },
+
         isEnabled: function() {
             if (!Adapt.location._currentId) return false;
             if (!this.handleRoute) return false;
@@ -165,9 +160,9 @@ define([
             if (this.isChangingLanguage) return false;
             
             switch (Adapt.location._contentType) {
-            case "menu": case "course":
-                this.inPage = false;
-                return false;
+                case "menu": case "course":
+                    this.inPage = false;
+                    return false;
             }
             var pageModel = Adapt.findById(Adapt.location._currentId);
             if (pageModel.get("_isOptional")) return false;
