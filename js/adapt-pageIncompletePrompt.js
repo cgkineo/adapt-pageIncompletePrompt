@@ -91,14 +91,18 @@ define([
             this.href = window.location.href;
 
             if (routeArguments[0]) {
-                //check if routing to current page child
-                //exit if on same page
+                var id = routeArguments[0];
+                // exit if on same page (e.g. if doing 'retry assessment')
+                if (id === Adapt.location._currentId) return;
+                // check if routing to current page child
                 try {
-                    var id = routeArguments[0];
                     var model = Adapt.findById(id);
                     var parent = model.findAncestor("contentObjects");
                     if (parent.get("_id") == this.pageModel.get("_id")) return;
-                } catch (e) {}
+                } catch (e) {
+                    console.error(e);
+                    return;
+                }
             }
 
             if (this._ignoreAccessibilityNavigation) {
