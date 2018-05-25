@@ -2,9 +2,8 @@ define([
     'core/js/adapt'
 ], function(Adapt) {
 
-
     var PageIncompletePrompt = _.extend({
-        
+
         PLUGIN_NAME: "_pageIncompletePrompt",
 
         handleRoute: true,
@@ -44,7 +43,7 @@ define([
             this.isChangingLanguage = true;
 
             this.setupModel();
-            
+
             Adapt.once('router:page', function() {
                 this.isChangingLanguage = false;
             }.bind(this));
@@ -79,14 +78,14 @@ define([
         onLeaveCancel: function() {
             if (!this.inPopup) return;
             this.inPopup = false;
-            
+
             this.stopListening(Adapt, "notify:cancelled");
             this.enableRouterNavigation(true);
             this.handleRoute = true;
         },
 
         onRouterNavigate: function(routeArguments) {
-            
+
             if(!this.isEnabled() || this.allComponentsComplete()) return;
 
             this.href = window.location.href;
@@ -158,7 +157,7 @@ define([
             if (!this.inPage) return false;
             if (this.inPopup) return false;
             if (this.isChangingLanguage) return false;
-            
+
             switch (Adapt.location._contentType) {
                 case "menu": case "course":
                     this.inPage = false;
@@ -172,17 +171,17 @@ define([
         },
 
         allComponentsComplete: function() {
-            
+
             if(this.pageComponents === null) return true;
-            
+
             for(var i = 0, count = this.pageComponents.length; i < count; i++) {
                 var component  = this.pageComponents[i];
                 var isMandatory = (component.get('_isOptional') === false);
                 var isComplete = component.get("_isComplete");
-            
+
                 if(isMandatory && !isComplete) return false;
             }
-            
+
             return true;
         },
 
