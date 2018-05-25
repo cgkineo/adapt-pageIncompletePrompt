@@ -175,18 +175,11 @@ define([
         },
 
         allComponentsComplete: function() {
-
             if(this.pageComponents === null) return true;
 
-            for(var i = 0, count = this.pageComponents.length; i < count; i++) {
-                var component  = this.pageComponents[i];
-                var isMandatory = (component.get('_isOptional') === false);
-                var isComplete = component.get("_isComplete");
-
-                if(isMandatory && !isComplete) return false;
-            }
-
-            return true;
+            return this.pageComponents.every(function(component) {
+                if(component.get('_isComplete') || component.get('_isOptional')) return true;
+            });
         },
 
         enableRouterNavigation: function(value) {
