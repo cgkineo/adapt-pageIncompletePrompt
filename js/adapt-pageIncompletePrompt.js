@@ -85,13 +85,12 @@ define([
         },
 
         onRouterNavigate: function(routeArguments) {
-
             if(!this.isEnabled() || this.allComponentsComplete()) return;
 
             this.href = window.location.href;
 
-            if (routeArguments[0]) {
-                var id = routeArguments[0];
+            var id = routeArguments[0];
+            if (id) {
                 // exit if on same page (e.g. if doing 'retry assessment')
                 if (id === Adapt.location._currentId) return;
                 // check if routing to current page child
@@ -178,7 +177,7 @@ define([
             if(this.pageComponents === null) return true;
 
             return this.pageComponents.every(function(component) {
-                if(component.get('_isComplete') || component.get('_isOptional')) return true;
+                return (component.get('_isComplete') || component.get('_isOptional'));
             });
         },
 
