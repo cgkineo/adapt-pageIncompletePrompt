@@ -97,7 +97,7 @@ define([
                 try {
                     var model = Adapt.findById(id);
                     var parent = model.findAncestor("contentObjects");
-                    if (parent.get("_id") == this.pageModel.get("_id")) return;
+                    if (parent && (parent.get("_id") === this.pageModel.get("_id"))) return;
                 } catch (e) {
                     console.error(e);
                     return;
