@@ -94,12 +94,9 @@ define([
                 // exit if on same page (e.g. if doing 'retry assessment')
                 if (id === Adapt.location._currentId) return;
                 // check if routing to current page child
-                try {
-                    var model = Adapt.findById(id);
-                    var parent = model.findAncestor("contentObjects");
-                    if (parent.get("_id") == this.pageModel.get("_id")) return;
-                } catch (e) {
-                    console.error(e);
+                var model = Adapt.findById(id);
+                var parent = model && model.findAncestor("contentObjects");
+                if (parent && (parent.get("_id") === this.pageModel.get("_id"))) {
                     return;
                 }
             }
