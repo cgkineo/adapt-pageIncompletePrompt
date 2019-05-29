@@ -96,7 +96,7 @@ define([
                 // check if routing to current page child
                 try {
                     var model = Adapt.findById(id);
-                    var parent = model.findAncestor("contentObjects");
+                    var parent = model.collection.url === "course/en/contentObjects.json" ? model : model.findAncestor("contentObjects");
                     if (parent.get("_id") == this.pageModel.get("_id")) return;
                 } catch (e) {
                     console.error(e);
