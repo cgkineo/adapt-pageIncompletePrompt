@@ -56,9 +56,6 @@ define([
         onPageViewReady: function() {
             this.inPage = true;
             this.pageModel = Adapt.findById(Adapt.location._currentId);
-            this.pageComponents = _.filter(this.pageModel.findDescendantModels("components"), function(item) {
-                return item.get("_isAvailable") === true;
-            });
         },
 
         onLeavePage: function() {
@@ -85,7 +82,7 @@ define([
         },
 
         onRouterNavigate: function(routeArguments) {
-            if(!this.isEnabled() || this.allComponentsComplete()) return;
+            if(!this.isEnabled() || this.pageModel.get('_isComplete')) return;
 
             this.href = window.location.href;
 
@@ -168,14 +165,6 @@ define([
             var isEnabledForCourse = this.model && !!this.model._isEnabled;
             var isEnabledForPage = pageModel.get("_pageIncompletePrompt") && !!pageModel.get("_pageIncompletePrompt")._isEnabled;
             return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
-        },
-
-        allComponentsComplete: function() {
-            if(this.pageComponents === null) return true;
-
-            return this.pageComponents.every(function(component) {
-                return (component.get('_isComplete') || component.get('_isOptional'));
-            });
         },
 
         enableRouterNavigation: function(value) {
