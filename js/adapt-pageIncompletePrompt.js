@@ -4,7 +4,7 @@ define([
 
     var PageIncompletePrompt = _.extend({
 
-        PLUGIN_NAME: "_pageIncompletePrompt",
+        PLUGIN_NAME: '_pageIncompletePrompt',
 
         handleRoute: true,
         inPage: false,
@@ -22,16 +22,16 @@ define([
 
         setupEventListeners: function() {
             this.listenTo(Adapt, {
-                "app:languageChanged": this.onLanguageChanging,
-                "pageView:ready": this.onPageViewReady,
-                "pageIncompletePrompt:leavePage": this.onLeavePage,
-                "pageIncompletePrompt:cancel": this.onLeaveCancel,
-                "router:navigate": this.onRouterNavigate
+                'app:languageChanged': this.onLanguageChanging,
+                'pageView:ready': this.onPageViewReady,
+                'pageIncompletePrompt:leavePage': this.onLeavePage,
+                'pageIncompletePrompt:cancel': this.onLeaveCancel,
+                'router:navigate': this.onRouterNavigate
             });
 
-            this.listenToOnce(Adapt, "app:dataLoaded", function() {
+            this.listenToOnce(Adapt, 'app:dataLoaded', function() {
                 this.setupModel();
-                this.listenTo(Adapt, "accessibility:toggle", this.onAccessibilityToggle);
+                this.listenTo(Adapt, 'accessibility:toggle', this.onAccessibilityToggle);
             });
         },
 
@@ -62,7 +62,7 @@ define([
             if (!this.inPopup) return;
             this.inPopup = false;
 
-            this.stopListening(Adapt, "notify:cancelled");
+            this.stopListening(Adapt, 'notify:cancelled');
             this.enableRouterNavigation(true);
             this.handleRoute = false;
             this.inPage = false;
@@ -76,7 +76,7 @@ define([
             if (!this.inPopup) return;
             this.inPopup = false;
 
-            this.stopListening(Adapt, "notify:cancelled");
+            this.stopListening(Adapt, 'notify:cancelled');
             this.enableRouterNavigation(true);
             this.handleRoute = true;
         },
@@ -92,8 +92,8 @@ define([
                 if (id === Adapt.location._currentId) return;
                 // check if routing to current page child
                 var model = Adapt.findById(id);
-                var parent = model && model.findAncestor("contentObjects");
-                if (parent && (parent.get("_id") === this.pageModel.get("_id"))) {
+                var parent = model && model.findAncestor('contentObjects');
+                if (parent && (parent.get('_id') === this.pageModel.get('_id'))) {
                     return;
                 }
             }
@@ -126,16 +126,16 @@ define([
                 body: this.model.message,
                 _prompts: [{
                     promptText: this.model._buttons.yes,
-                    _callbackEvent: "pageIncompletePrompt:leavePage",
+                    _callbackEvent: 'pageIncompletePrompt:leavePage',
                 }, {
                     promptText: this.model._buttons.no,
-                    _callbackEvent: "pageIncompletePrompt:cancel"
+                    _callbackEvent: 'pageIncompletePrompt:cancel'
                 }],
                 _showIcon: true
             };
 
             // override with page-specific settings?
-            var pipConfig = this.pageModel.get("_pageIncompletePrompt");
+            var pipConfig = this.pageModel.get('_pageIncompletePrompt');
             if (pipConfig && pipConfig._buttons) {
                 promptObject.title = pipConfig.title;
                 promptObject.body = pipConfig.message;
@@ -143,8 +143,8 @@ define([
                 promptObject._prompts[1].promptText = pipConfig._buttons.no;
             }
 
-            this.listenToOnce(Adapt, "notify:cancelled", this.onLeaveCancel);
-            Adapt.trigger("notify:prompt", promptObject);
+            this.listenToOnce(Adapt, 'notify:cancelled', this.onLeaveCancel);
+            Adapt.trigger('notify:prompt', promptObject);
             this.inPopup = true;
         },
 
@@ -156,19 +156,21 @@ define([
             if (this.isChangingLanguage) return false;
 
             switch (Adapt.location._contentType) {
-                case "menu": case "course":
+                case 'menu': case 'course':
                     this.inPage = false;
                     return false;
             }
+
             var pageModel = Adapt.findById(Adapt.location._currentId);
-            if (pageModel.get("_isOptional")) return false;
+            if (pageModel.get('_isOptional')) return false;
+
             var isEnabledForCourse = this.model && !!this.model._isEnabled;
-            var isEnabledForPage = pageModel.get("_pageIncompletePrompt") && !!pageModel.get("_pageIncompletePrompt")._isEnabled;
+            var isEnabledForPage = pageModel.get('_pageIncompletePrompt') && !!pageModel.get('_pageIncompletePrompt')._isEnabled;
             return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
         },
 
         enableRouterNavigation: function(value) {
-            Adapt.router.set("_canNavigate", value, { pluginName: this.PLUGIN_NAME });
+            Adapt.router.set('_canNavigate', value, { pluginName: this.PLUGIN_NAME });
         }
 
     }, Backbone.Events);
