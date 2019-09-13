@@ -123,13 +123,13 @@ define([
     },
 
     showPrompt: function() {
-            var classes = 'pageIncomplete ';
-            classes += (this.model._classes || '');
+      var classes = 'pageIncomplete ';
+      classes += (this.model._classes || '');
       // standard prompt settings (from course.json)
       var promptObject = {
         title: this.model.title,
         body: this.model.message,
-                _classes: classes,
+        _classes: classes,
         _prompts: [{
           promptText: this.model._buttons.yes,
           _callbackEvent: "pageIncompletePrompt:leavePage",
