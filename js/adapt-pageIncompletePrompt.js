@@ -123,10 +123,13 @@ define([
     },
 
     showPrompt: function() {
+            var classes = 'pageIncomplete ';
+            classes += (this.model._classes || '');
       // standard prompt settings (from course.json)
       var promptObject = {
         title: this.model.title,
         body: this.model.message,
+                _classes: classes,
         _prompts: [{
           promptText: this.model._buttons.yes,
           _callbackEvent: "pageIncompletePrompt:leavePage",
@@ -142,6 +145,7 @@ define([
       if (pipConfig && pipConfig._buttons) {
         promptObject.title = pipConfig.title;
         promptObject.body = pipConfig.message;
+        promptObject._classes = pipConfig._classes;
         promptObject._prompts[0].promptText = pipConfig._buttons.yes;
         promptObject._prompts[1].promptText = pipConfig._buttons.no;
       }
