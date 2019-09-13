@@ -45,6 +45,15 @@
                   "validators": [],
                   "translatable": true
                 },
+                "_classes": {
+                  "type": "string",
+                  "required": false,
+                  "default": "",
+                  "title": "Classes",
+                  "inputType": "Text",
+                  "validators": [],
+                  "help": "CSS classes for styling the prompt"
+                },
                 "_buttons": {
                   "type": "object",
                   "required":true,
