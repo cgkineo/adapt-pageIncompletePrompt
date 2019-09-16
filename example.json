@@ -1,5 +1,5 @@
 //course.json
-"_pageIncompletePrompt" : {
+"_pageIncompletePrompt": {
     "_isEnabled": true,
     "_buttons": {
         "yes": "Yes",
@@ -14,7 +14,7 @@
 
 //contentObjects.json
 {
-  "_pageIncompletePrompt" : {
-    "_isEnabled": true
-  }
+    "_pageIncompletePrompt": {
+      "_isEnabled": true
+    }
 }
