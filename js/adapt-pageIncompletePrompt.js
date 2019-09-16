@@ -2,7 +2,7 @@ define([
     'core/js/adapt'
 ], function(Adapt) {
 
-    var PageIncompletePrompt = _.extend({
+    var PageIncompletePrompt = Backbone.Controller.extend({
 
         PLUGIN_NAME: '_pageIncompletePrompt',
 
@@ -10,7 +10,6 @@ define([
         inPage: false,
         inPopup: false,
         isChangingLanguage: false,
-        pageComponents: null,
         pageModel: null,
         model: null,
 
@@ -113,10 +112,10 @@ define([
                 //accessibility is always on for touch devices
                 //ignore toggle
                 this._ignoreAccessibilityNavigation = false;
-            } else {
-                //skip renavigate for accessibility on desktop
-                this._ignoreAccessibilityNavigation = true;
+                return;
             }
+            //skip renavigate for accessibility on desktop
+            this._ignoreAccessibilityNavigation = true;
         },
 
         showPrompt: function() {
@@ -173,10 +172,9 @@ define([
             Adapt.router.set('_canNavigate', value, { pluginName: this.PLUGIN_NAME });
         }
 
-    }, Backbone.Events);
+    });
 
-    PageIncompletePrompt.initialize();
 
-    return PageIncompletePrompt;
+    return new PageIncompletePrompt();
 
 });
