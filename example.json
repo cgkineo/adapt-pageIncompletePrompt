@@ -6,7 +6,8 @@
             "no": "No"
         },
         "title": "Page incomplete",
-        "message": "Are you sure you would like to leave?"
+        "message": "Are you sure you would like to leave?",
+        "_classes": ""
     }
 
     // and / or (to override)
