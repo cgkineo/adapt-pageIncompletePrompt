@@ -1,4 +1,4 @@
-//course.json
+    // course.json
     "_pageIncompletePrompt": {
         "_isEnabled": true,
         "_buttons": {
@@ -9,9 +9,9 @@
         "message": "Are you sure you would like to leave?"
     }
 
-//and / or (to override)
+    // and / or (to override)
 
-//contentObjects.json
+    // contentObjects.json
     "_pageIncompletePrompt": {
         "_isEnabled": true
     }
