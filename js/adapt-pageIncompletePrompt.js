@@ -93,7 +93,7 @@ define([
         var model = Adapt.findById(id);
         var parent = model && model.findAncestor('contentObjects');
         if (parent && (parent.get('_id') === this.pageModel.get('_id'))) {
-            return;
+          return;
         }
       }
 
@@ -119,7 +119,7 @@ define([
     },
 
     showPrompt: function() {
-      var classes = 'pageIncomplete ';
+      var classes = 'is-pageincomplete ';
       classes += (this.model._classes || '');
       // standard prompt settings (from course.json)
       var promptObject = {
