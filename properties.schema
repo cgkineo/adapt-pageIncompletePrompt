@@ -39,7 +39,7 @@
                 "message": {
                   "type": "string",
                   "required": true,
-                  "default": "Are you sure you would like to leave?",
+                  "default": "It looks like you have some incomplete activities on this page, are you sure you want to leave?",
                   "title": "Prompt message",
                   "inputType": "Text",
                   "validators": [],
