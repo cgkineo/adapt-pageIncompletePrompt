@@ -4,8 +4,8 @@
     "type": "git",
     "url": "git://github.com/cgkineo/adapt-pageIncompletePrompt"
   },
-  "version": "3.0.0",
-  "framework": ">=5",
+  "version": "2.1.0",
+  "framework": ">=3.3",
   "homepage": "https://github.com/cgkineo/adapt-pageIncompletePrompt",
   "issues": "https://github.com/cgkineo/adapt-pageIncompletePrompt/issues/",
   "extension": "pageIncompletePrompt",
