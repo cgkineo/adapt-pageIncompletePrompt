@@ -83,7 +83,9 @@ define([
     onRouterNavigate: function(routeArguments) {
       if (!this.isEnabled() || this.pageModel.get('_isComplete')) return;
 
-      this.href = window.location.href;
+      this.href = /#/.test(window.location.href) ? 
+        window.location.href :
+        window.location.href + "#";
 
       var id = routeArguments[0];
       if (id) {
