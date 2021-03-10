@@ -1,14 +1,14 @@
-    // course.json
-    "_pageIncompletePrompt": {
-        "_isEnabled": true,
-        "_buttons": {
-            "yes": "Yes",
-            "no": "No"
-        },
-        "title": "Page incomplete",
-        "message": "Are you sure you would like to leave?",
-        "_classes": ""
-    }
+//course.json
+"_pageIncompletePrompt": {
+    "_isEnabled": true,
+    "_buttons": {
+        "yes": "Leave page",
+        "no": "Stay on page"
+    },
+    "title": "Are you sure you want to leave?",
+    "message": "You haven't looked at all the content on this page.<br><br>If you’d like to complete this page, select <b>Stay on page</b>. Select the progress bar at the top of the screen to see what's incomplete. Jump to any incomplete item by selecting it.<br><br>If you'd like to leave the page anyway, select <b>Leave page</b>."
+}
+
 
     // and / or (to override)
 
