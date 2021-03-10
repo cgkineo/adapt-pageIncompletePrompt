@@ -10,11 +10,9 @@
 }
 
 
-//and / or (to override)
+    // and / or (to override)
 
-//contentObjects.json
-{
-  "_pageIncompletePrompt" : {
-    "_isEnabled": true
-  }
-}
+    // contentObjects.json
+    "_pageIncompletePrompt": {
+        "_isEnabled": true
+    }
