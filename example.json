@@ -6,7 +6,7 @@
         "no": "Stay on the page"
     },
     "title": "Are you sure you want to leave?",
-    "message": "You haven't looked at all the content on the page.<br>If you'd like to complete the page, select <b>Stay on the page</b>. Then select the progress bar at the top of the screen. This reveals a panel which shows you which parts of the page you still need to complete. Jump straight to the relevant part of the page by selecting a heading.<br>If you'd like to leave the page, select <b>Exit page</b>."
+    "message": "You haven't looked at all the content on this page.<br>If you’d like to complete this page, select <b>Stay on the page</b>. Select the progress bar at the top of the screen to see what's left to do. Jump to what's incomplete by selecting a heading.<br>If you'd like to leave the page, select <b>Exit page</b>."
 }
 
 
