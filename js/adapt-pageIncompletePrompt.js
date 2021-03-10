@@ -83,7 +83,9 @@ define([
     onRouterNavigate: function(routeArguments) {
       if (!this.isEnabled() || this.pageModel.get('_isComplete')) return;
 
-      this.href = window.location.href;
+      this.href = /#/.test(window.location.href) ?
+        window.location.href :
+        window.location.href + '#';
 
       var id = routeArguments[0];
       if (id) {
@@ -109,8 +111,8 @@ define([
 
     onAccessibilityToggle: function() {
       if (Adapt.device.touch) {
-        //accessibility is always on for touch devices
-        //ignore toggle
+        // accessibility is always on for touch devices
+        // ignore toggle
         this._ignoreAccessibilityNavigation = false;
         return;
       }
@@ -126,7 +128,7 @@ define([
         _classes: 'is-pageincompleteprompt ' + (this.model._classes || ''),
         _prompts: [{
           promptText: this.model._buttons.yes,
-          _callbackEvent: 'pageIncompletePrompt:leavePage',
+          _callbackEvent: 'pageIncompletePrompt:leavePage'
         }, {
           promptText: this.model._buttons.no,
           _callbackEvent: 'pageIncompletePrompt:cancel'
