@@ -30,7 +30,7 @@
                 "title": {
                   "type": "string",
                   "required": true,
-                  "default": "Page incomplete",
+                  "default": "Are you sure you want to leave?",
                   "title": "Prompt title",
                   "inputType": "Text",
                   "validators": [],
@@ -39,7 +39,7 @@
                 "message": {
                   "type": "string",
                   "required": true,
-                  "default": "Are you sure you would like to leave?",
+                  "default": "You haven't looked at all the content on this page.<br>If you’d like to complete this page, select <b>Stay on the page</b>. Select the progress bar at the top of the screen to see what's left to do. Jump to what's incomplete by selecting a heading.<br>If you'd like to leave the page anyway, select <b>Exit page</b>.",
                   "title": "Prompt message",
                   "inputType": "Text",
                   "validators": [],
@@ -56,13 +56,13 @@
                 },
                 "_buttons": {
                   "type": "object",
-                  "required":true,
+                  "required": true,
                   "legend": "Button labels",
                   "properties" : {
                     "yes": {
                       "type": "string",
                       "required": true,
-                      "default": "Yes",
+                      "default": "Leave page",
                       "title": "'Yes' button label",
                       "inputType": "Text",
                       "validators": [],
@@ -71,7 +71,7 @@
                     "no": {
                       "type": "string",
                       "required": true,
-                      "default": "No",
+                      "default": "Stay on page",
                       "title": "'No' button label",
                       "inputType": "Text",
                       "validators": [],
@@ -98,7 +98,7 @@
                   "title": "Enabled?",
                   "inputType": "Checkbox",
                   "validators": [],
-                  "help": "Whether Page Incomplete Prompt is enabled for this page or not. This is setting is only required if you want this page to override the global setting."
+                  "help": "Whether Page Incomplete Prompt is enabled for this page or not. This is setting is only required if you want to override the global setting."
                 }
               }
             }

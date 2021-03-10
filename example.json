@@ -2,11 +2,11 @@
 "_pageIncompletePrompt": {
     "_isEnabled": true,
     "_buttons": {
-        "yes": "Exit page",
-        "no": "Stay on the page"
+        "yes": "Leave page",
+        "no": "Stay on page"
     },
     "title": "Are you sure you want to leave?",
-    "message": "You haven't looked at all the content on this page.<br>If you’d like to complete this page, select <b>Stay on the page</b>. Select the progress bar at the top of the screen to see what's left to do. Jump to what's incomplete by selecting a heading.<br>If you'd like to leave the page, select <b>Exit page</b>."
+    "message": "You haven't looked at all the content on this page.<br>If you’d like to complete this page, select <b>Stay on the page</b>. Select the progress bar at the top of the screen to see what's left to do. Jump to what's incomplete by selecting a heading.<br>If you'd like to leave the page anyway, select <b>Leave page</b>."
 }
 
 
