@@ -1,0 +1,74 @@
+{
+  "$anchor": "pageIncomletePrompt-course",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "$patch": {
+    "source": {
+      "$ref": "course"
+    },
+    "with": {
+      "properties": {
+        "_pageIncompletePrompt": {
+          "type": "object",
+          "title": "Page Incomplete Prompt",
+          "default": {},
+          "required": [
+            "_buttons"
+          ],
+          "properties": {
+            "_isEnabled": {
+              "type": "boolean",
+              "title": "Enabled?",
+              "description": "Enables a page level notification that warns the learner if they haven't completed everything required on the page.",
+              "default": true
+            },
+            "title": {
+              "type": "string",
+              "title": "Prompt title",
+              "default": "Page incomplete",
+              "_adapt": {
+                "translatable": true
+              }
+            },
+            "message": {
+              "type": "string",
+              "title": "Prompt message",
+              "default": "Are you sure you would like to leave?",
+              "_adapt": {
+                "translatable": true
+              }
+            },
+            "_classes": {
+              "type": "string",
+              "title": "Classes",
+              "description": "CSS classes for styling the prompt",
+              "default": ""
+            },
+            "_buttons": {
+              "type": "object",
+              "title": "Button labels",
+              "properties": {
+                "yes": {
+                  "type": "string",
+                  "title": "'Yes' button label",
+                  "default": "Yes",
+                  "_adapt": {
+                    "translatable": true
+                  }
+                },
+                "no": {
+                  "type": "string",
+                  "title": "'No' button label",
+                  "default": "No",
+                  "_adapt": {
+                    "translatable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
