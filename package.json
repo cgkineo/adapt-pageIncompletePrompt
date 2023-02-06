@@ -1,0 +1,62 @@
+{
+  "name": "adapt-pageIncompletePrompt",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cgkineo/adapt-pageIncompletePrompt"
+  },
+  "version": "2.1.1",
+  "framework": ">=3.3",
+  "homepage": "https://github.com/cgkineo/adapt-pageIncompletePrompt",
+  "issues": "https://github.com/cgkineo/adapt-pageIncompletePrompt/issues/",
+  "extension": "pageIncompletePrompt",
+  "displayName": "Page Incomplete Prompt",
+  "description": "Displays a prompt if you try and leave a page without having completed all components",
+  "main": "/js/adapt-pageIncompletePrompt.js",
+  "keywords": [
+    "adapt-plugin",
+    "adapt-extension"
+  ],
+  "license": "GPL-3.0",
+  "targetAttribute": "_pageIncompletePrompt",
+  "private": true,
+  "devDependencies": {
+    "@semantic-release/commit-analyzer": "^9.0.2",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^8.0.5",
+    "@semantic-release/npm": "^9.0.1",
+    "@semantic-release/release-notes-generator": "^10.0.3",
+    "conventional-changelog-eslint": "^3.0.9",
+    "semantic-release": "^19.0.3"
+  },
+  "scripts": {
+    "postversion": "cp package.json bower.json"
+  },
+  "release": {
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "eslint"
+        }
+      ],
+      [
+        "@semantic-release/release-notes-generator",
+        {
+          "preset": "eslint"
+        }
+      ],
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "bower.json"
+          ],
+          "message": "Chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        }
+      ]
+    ]
+  }
+}
