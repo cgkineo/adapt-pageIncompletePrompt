@@ -2,7 +2,7 @@ define([
   'core/js/adapt'
 ], function(Adapt) {
 
-  var PageIncompletePrompt = Backbone.Controller.extend({
+  const PageIncompletePrompt = Backbone.Controller.extend({
 
     PLUGIN_NAME: '_pageIncompletePrompt',
 
@@ -87,13 +87,13 @@ define([
         window.location.href :
         window.location.href + '#';
 
-      var id = routeArguments[0];
+      const id = routeArguments[0];
       if (id) {
         // exit if on same page (e.g. if doing 'retry assessment')
         if (id === Adapt.location._currentId) return;
         // check if routing to current page child
-        var model = Adapt.findById(id);
-        var parent = model && model.findAncestor('contentObjects');
+        const model = Adapt.findById(id);
+        const parent = model && model.findAncestor('contentObjects');
         if (parent && (parent.get('_id') === this.pageModel.get('_id'))) {
           return;
         }
@@ -122,7 +122,7 @@ define([
 
     showPrompt: function() {
       // standard prompt settings (from course.json)
-      var promptObject = {
+      const promptObject = {
         title: this.model.title,
         body: this.model.message,
         _classes: 'is-pageincompleteprompt ' + (this.model._classes || ''),
@@ -137,7 +137,7 @@ define([
       };
 
       // override with page-specific settings?
-      var pipConfig = this.pageModel.get('_pageIncompletePrompt');
+      const pipConfig = this.pageModel.get('_pageIncompletePrompt');
       if (pipConfig && pipConfig._buttons) {
         promptObject.title = pipConfig.title;
         promptObject.body = pipConfig.message;
@@ -164,11 +164,11 @@ define([
           return false;
       }
 
-      var pageModel = Adapt.findById(Adapt.location._currentId);
+      const pageModel = Adapt.findById(Adapt.location._currentId);
       if (pageModel.get('_isOptional')) return false;
 
-      var isEnabledForCourse = this.model && !!this.model._isEnabled;
-      var isEnabledForPage = pageModel.get('_pageIncompletePrompt') && !!pageModel.get('_pageIncompletePrompt')._isEnabled;
+      const isEnabledForCourse = this.model && !!this.model._isEnabled;
+      const isEnabledForPage = pageModel.get('_pageIncompletePrompt') && !!pageModel.get('_pageIncompletePrompt')._isEnabled;
       return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
     },
 

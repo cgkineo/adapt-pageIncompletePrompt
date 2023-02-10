@@ -1,0 +1,27 @@
+{
+  "$anchor": "pageIncomletePrompt-contentobject",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "$patch": {
+    "source": {
+      "$ref": "contentobject"
+    },
+    "with": {
+      "properties": {
+        "_pageIncompletePrompt": {
+          "type": "object",
+          "title": "Page Incomplete Prompt",
+          "default": {},
+          "properties": {
+            "_isEnabled": {
+              "type": "boolean",
+              "title": "Enabled?",
+              "description": "Whether Page Incomplete Prompt is enabled for this page or not. This is setting is only required if you want this page to override the global setting.",
+              "default": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

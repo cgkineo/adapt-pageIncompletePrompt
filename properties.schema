@@ -25,7 +25,8 @@
                   "default": true,
                   "title": "Enabled?",
                   "inputType": "Checkbox",
-                  "validators": []
+                  "validators": [],
+                  "help": "Enables a page level notification that warns the learner if they haven't completed everything required on the page."
                 },
                 "title": {
                   "type": "string",
