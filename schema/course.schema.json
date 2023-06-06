@@ -12,9 +12,6 @@
           "type": "object",
           "title": "Page Incomplete Prompt",
           "default": {},
-          "required": [
-            "_buttons"
-          ],
           "properties": {
             "_isEnabled": {
               "type": "boolean",
