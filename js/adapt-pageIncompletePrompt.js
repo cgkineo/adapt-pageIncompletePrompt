@@ -6,15 +6,14 @@ import router from 'core/js/router';
 
 class PageIncompletePrompt extends Backbone.Controller {
   initialize() {
-    this.setupEventListeners();
-
     this.handleRoute = true;
     this.inPage = false;
     this.inPopup = false;
     this.isChangingLanguage = false;
     this.pageModel = null;
-    this.model = null;
     this._ignoreAccessibilityNavigation = false;
+
+    this.setupEventListeners();
   }
 
   setupEventListeners() {
@@ -29,7 +28,6 @@ class PageIncompletePrompt extends Backbone.Controller {
     });
 
     this.listenToOnce(Adapt, 'app:dataLoaded', function() {
-      this.setupModel();
       this.listenTo(Adapt, 'accessibility:toggle', this.onAccessibilityToggle);
     });
   }
@@ -41,15 +39,13 @@ class PageIncompletePrompt extends Backbone.Controller {
   onLanguageChanging() {
     this.isChangingLanguage = true;
 
-    this.setupModel();
-
     Adapt.once('router:page', function() {
       this.isChangingLanguage = false;
     }.bind(this));
   }
 
-  setupModel() {
-    this.model = Adapt.course.get(this._pageIncompletePrompt);
+  get courseConfig() {
+    return Adapt.course.get('_pageIncompletePrompt');
   }
 
   onPageViewReady() {
@@ -121,14 +117,14 @@ class PageIncompletePrompt extends Backbone.Controller {
   showPrompt() {
     // standard prompt settings (from course.json)
     const promptObject = {
-      title: this.model.title,
-      body: this.model.message,
-      _classes: 'is-pageincompleteprompt ' + (this.model._classes || ''),
+      title: this.courseConfig.title,
+      body: this.courseConfig.message,
+      _classes: 'is-pageincompleteprompt ' + (this.courseConfig._classes || ''),
       _prompts: [{
-        promptText: this.model._buttons.yes,
+        promptText: this.courseConfig._buttons.yes,
         _callbackEvent: 'pageIncompletePrompt:leavePage'
       }, {
-        promptText: this.model._buttons.no,
+        promptText: this.courseConfig._buttons.no,
         _callbackEvent: 'pageIncompletePrompt:cancel'
       }],
       _showIcon: true
@@ -165,13 +161,13 @@ class PageIncompletePrompt extends Backbone.Controller {
     const pageModel = data.findById(location._currentId);
     if (pageModel.get('_isOptional')) return false;
 
-    const isEnabledForCourse = this.model && !!this.model._isEnabled;
+    const isEnabledForCourse = this.courseConfig && Boolean(this.courseConfig._isEnabled);
     const isEnabledForPage = pageModel.get('_pageIncompletePrompt') && !!pageModel.get('_pageIncompletePrompt')._isEnabled;
     return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
   }
 
   enableRouterNavigation(value) {
-    router.set('_canNavigate', value, { pluginName: this._pageIncompletePrompt });
+    router.model.set('_canNavigate', value, { pluginName: '_pageIncompletePrompt' });
   }
 
 }
