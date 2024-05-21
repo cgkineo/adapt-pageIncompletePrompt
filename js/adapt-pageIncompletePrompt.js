@@ -33,8 +33,8 @@ class PageIncompletePrompt extends Backbone.Controller {
   }
 
   /**
-   * suppresses the prompt if the user changes language whilst in a page, then re-enables
-   * it once the language has been changed and we've navigated back to a page
+   * Suppresses the prompt if the user changes language whilst in a page, then re-enables
+   * it once the language has been changed and we have navigated back to a page.
    */
   onLanguageChanging() {
     this.isChangingLanguage = true;
@@ -85,9 +85,10 @@ class PageIncompletePrompt extends Backbone.Controller {
 
     const id = routeArguments[0];
     if (id) {
-      // exit if on same page (e.g. if doing 'retry assessment')
+      // Exit if on same page (e.g. if doing 'retry assessment')
       if (id === location._currentId) return;
-      // check if routing to current page child
+
+      // Check if routing to current page child
       const model = data.findById(id);
       const parent = model && model.findAncestor('contentObjects');
       if (parent && (parent.get('_id') === this.pageModel.get('_id'))) return;
@@ -104,18 +105,17 @@ class PageIncompletePrompt extends Backbone.Controller {
 
   onAccessibilityToggle() {
     if (device.touch) {
-      // accessibility is always on for touch devices
-      // ignore toggle
+      // Ignore toggle. Accessibility is always on for touch devices
       this._ignoreAccessibilityNavigation = false;
       return;
     }
 
-    // skip renavigate for accessibility on desktop
+    // Skip renavigate for accessibility on desktop
     this._ignoreAccessibilityNavigation = true;
   }
 
   showPrompt() {
-    // standard prompt settings (from course.json)
+    // Standard prompt settings (from course.json)
     const promptObject = {
       title: this.courseConfig.title,
       body: this.courseConfig.message,
@@ -130,7 +130,7 @@ class PageIncompletePrompt extends Backbone.Controller {
       _showIcon: true
     };
 
-    // override with page-specific settings?
+    // Override with page-specific settings
     const pipConfig = this.pageModel.get('_pageIncompletePrompt');
     if (pipConfig && pipConfig._buttons) {
       promptObject.title = pipConfig.title;
@@ -169,7 +169,6 @@ class PageIncompletePrompt extends Backbone.Controller {
   enableRouterNavigation(value) {
     router.model.set('_canNavigate', value, { pluginName: '_pageIncompletePrompt' });
   }
-
 }
 
 export default new PageIncompletePrompt();
