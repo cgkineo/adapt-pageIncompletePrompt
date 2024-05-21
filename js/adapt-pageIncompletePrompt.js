@@ -1,183 +1,179 @@
-define([
-  'core/js/adapt'
-], function(Adapt) {
+import Adapt from 'core/js/adapt';
+import data from 'core/js/data';
+import device from 'core/js/device';
+import location from 'core/js/location';
+import router from 'core/js/router';
 
-  const PageIncompletePrompt = Backbone.Controller.extend({
+class PageIncompletePrompt extends Backbone.Controller {
+  initialize() {
+    this.setupEventListeners();
 
-    PLUGIN_NAME: '_pageIncompletePrompt',
+    this.handleRoute = true;
+    this.inPage = false;
+    this.inPopup = false;
+    this.isChangingLanguage = false;
+    this.pageModel = null;
+    this.model = null;
+    this._ignoreAccessibilityNavigation = false;
+  }
 
-    handleRoute: true,
-    inPage: false,
-    inPopup: false,
-    isChangingLanguage: false,
-    pageModel: null,
-    model: null,
+  setupEventListeners() {
+    _.bindAll(this, 'onLanguageChanging', 'onPageViewReady', 'onLeavePage', 'onLeaveCancel', 'onRouterNavigate');
 
-    _ignoreAccessibilityNavigation: false,
+    this.listenTo(Adapt, {
+      'app:languageChanged': this.onLanguageChanging,
+      'pageView:ready': this.onPageViewReady,
+      'pageIncompletePrompt:leavePage': this.onLeavePage,
+      'pageIncompletePrompt:cancel': this.onLeaveCancel,
+      'router:navigate': this.onRouterNavigate
+    });
 
-    initialize: function() {
-      this.setupEventListeners();
-    },
-
-    setupEventListeners: function() {
-      this.listenTo(Adapt, {
-        'app:languageChanged': this.onLanguageChanging,
-        'pageView:ready': this.onPageViewReady,
-        'pageIncompletePrompt:leavePage': this.onLeavePage,
-        'pageIncompletePrompt:cancel': this.onLeaveCancel,
-        'router:navigate': this.onRouterNavigate
-      });
-
-      this.listenToOnce(Adapt, 'app:dataLoaded', function() {
-        this.setupModel();
-        this.listenTo(Adapt, 'accessibility:toggle', this.onAccessibilityToggle);
-      });
-    },
-
-    /**
-     * suppresses the prompt if the user changes language whilst in a page, then re-enables
-     * it once the language has been changed and we've navigated back to a page
-     */
-    onLanguageChanging: function() {
-      this.isChangingLanguage = true;
-
+    this.listenToOnce(Adapt, 'app:dataLoaded', function() {
       this.setupModel();
+      this.listenTo(Adapt, 'accessibility:toggle', this.onAccessibilityToggle);
+    });
+  }
 
-      Adapt.once('router:page', function() {
-        this.isChangingLanguage = false;
-      }.bind(this));
-    },
+  /**
+   * suppresses the prompt if the user changes language whilst in a page, then re-enables
+   * it once the language has been changed and we've navigated back to a page
+   */
+  onLanguageChanging() {
+    this.isChangingLanguage = true;
 
-    setupModel: function() {
-      this.model = Adapt.course.get(this.PLUGIN_NAME);
-    },
+    this.setupModel();
 
-    onPageViewReady: function() {
-      this.inPage = true;
-      this.pageModel = Adapt.findById(Adapt.location._currentId);
-    },
+    Adapt.once('router:page', function() {
+      this.isChangingLanguage = false;
+    }.bind(this));
+  }
 
-    onLeavePage: function() {
-      if (!this.inPopup) return;
-      this.inPopup = false;
+  setupModel() {
+    this.model = Adapt.course.get(this._pageIncompletePrompt);
+  }
 
-      this.stopListening(Adapt, 'notify:cancelled');
-      this.enableRouterNavigation(true);
-      this.handleRoute = false;
-      this.inPage = false;
+  onPageViewReady() {
+    this.inPage = true;
+    this.pageModel = data.findById(location._currentId);
+  }
 
-      window.location.href = this.href;
+  onLeavePage() {
+    if (!this.inPopup) return;
+    this.inPopup = false;
 
-      this.handleRoute = true;
-    },
+    this.stopListening(Adapt, 'notify:cancelled');
+    this.enableRouterNavigation(true);
+    this.handleRoute = false;
+    this.inPage = false;
 
-    onLeaveCancel: function() {
-      if (!this.inPopup) return;
-      this.inPopup = false;
+    window.location.href = this.href;
 
-      this.stopListening(Adapt, 'notify:cancelled');
-      this.enableRouterNavigation(true);
-      this.handleRoute = true;
-    },
+    this.handleRoute = true;
+  }
 
-    onRouterNavigate: function(routeArguments) {
-      if (!this.isEnabled() || this.pageModel.get('_isComplete')) return;
+  onLeaveCancel() {
+    if (!this.inPopup) return;
+    this.inPopup = false;
 
-      this.href = /#/.test(window.location.href) ?
-        window.location.href :
-        window.location.href + '#';
+    this.stopListening(Adapt, 'notify:cancelled');
+    this.enableRouterNavigation(true);
+    this.handleRoute = true;
+  }
 
-      const id = routeArguments[0];
-      if (id) {
-        // exit if on same page (e.g. if doing 'retry assessment')
-        if (id === Adapt.location._currentId) return;
-        // check if routing to current page child
-        const model = Adapt.findById(id);
-        const parent = model && model.findAncestor('contentObjects');
-        if (parent && (parent.get('_id') === this.pageModel.get('_id'))) {
-          return;
-        }
-      }
+  onRouterNavigate(routeArguments) {
+    if (!this.isEnabled() || this.pageModel.get('_isComplete')) return;
 
-      if (this._ignoreAccessibilityNavigation) {
-        this._ignoreAccessibilityNavigation = false;
-        return;
-      }
+    this.href = /#/.test(window.location.href) ?
+      window.location.href :
+      window.location.href + '#';
 
-      this.enableRouterNavigation(false);
-
-      this.showPrompt();
-    },
-
-    onAccessibilityToggle: function() {
-      if (Adapt.device.touch) {
-        // accessibility is always on for touch devices
-        // ignore toggle
-        this._ignoreAccessibilityNavigation = false;
-        return;
-      }
-      // skip renavigate for accessibility on desktop
-      this._ignoreAccessibilityNavigation = true;
-    },
-
-    showPrompt: function() {
-      // standard prompt settings (from course.json)
-      const promptObject = {
-        title: this.model.title,
-        body: this.model.message,
-        _classes: 'is-pageincompleteprompt ' + (this.model._classes || ''),
-        _prompts: [{
-          promptText: this.model._buttons.yes,
-          _callbackEvent: 'pageIncompletePrompt:leavePage'
-        }, {
-          promptText: this.model._buttons.no,
-          _callbackEvent: 'pageIncompletePrompt:cancel'
-        }],
-        _showIcon: true
-      };
-
-      // override with page-specific settings?
-      const pipConfig = this.pageModel.get('_pageIncompletePrompt');
-      if (pipConfig && pipConfig._buttons) {
-        promptObject.title = pipConfig.title;
-        promptObject.body = pipConfig.message;
-        promptObject._classes = pipConfig._classes;
-        promptObject._prompts[0].promptText = pipConfig._buttons.yes;
-        promptObject._prompts[1].promptText = pipConfig._buttons.no;
-      }
-
-      this.listenToOnce(Adapt, 'notify:cancelled', this.onLeaveCancel);
-      Adapt.trigger('notify:prompt', promptObject);
-      this.inPopup = true;
-    },
-
-    isEnabled: function() {
-      if (!Adapt.location._currentId) return false;
-      if (!this.handleRoute) return false;
-      if (!this.inPage) return false;
-      if (this.inPopup) return false;
-      if (this.isChangingLanguage) return false;
-
-      switch (Adapt.location._contentType) {
-        case 'menu': case 'course':
-          this.inPage = false;
-          return false;
-      }
-
-      const pageModel = Adapt.findById(Adapt.location._currentId);
-      if (pageModel.get('_isOptional')) return false;
-
-      const isEnabledForCourse = this.model && !!this.model._isEnabled;
-      const isEnabledForPage = pageModel.get('_pageIncompletePrompt') && !!pageModel.get('_pageIncompletePrompt')._isEnabled;
-      return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
-    },
-
-    enableRouterNavigation: function(value) {
-      Adapt.router.set('_canNavigate', value, { pluginName: this.PLUGIN_NAME });
+    const id = routeArguments[0];
+    if (id) {
+      // exit if on same page (e.g. if doing 'retry assessment')
+      if (id === location._currentId) return;
+      // check if routing to current page child
+      const model = data.findById(id);
+      const parent = model && model.findAncestor('contentObjects');
+      if (parent && (parent.get('_id') === this.pageModel.get('_id'))) return;
     }
 
-  });
+    if (this._ignoreAccessibilityNavigation) {
+      this._ignoreAccessibilityNavigation = false;
+      return;
+    }
 
-  return new PageIncompletePrompt();
+    this.enableRouterNavigation(false);
+    this.showPrompt();
+  }
 
-});
+  onAccessibilityToggle() {
+    if (device.touch) {
+      // accessibility is always on for touch devices
+      // ignore toggle
+      this._ignoreAccessibilityNavigation = false;
+      return;
+    }
+
+    // skip renavigate for accessibility on desktop
+    this._ignoreAccessibilityNavigation = true;
+  }
+
+  showPrompt() {
+    // standard prompt settings (from course.json)
+    const promptObject = {
+      title: this.model.title,
+      body: this.model.message,
+      _classes: 'is-pageincompleteprompt ' + (this.model._classes || ''),
+      _prompts: [{
+        promptText: this.model._buttons.yes,
+        _callbackEvent: 'pageIncompletePrompt:leavePage'
+      }, {
+        promptText: this.model._buttons.no,
+        _callbackEvent: 'pageIncompletePrompt:cancel'
+      }],
+      _showIcon: true
+    };
+
+    // override with page-specific settings?
+    const pipConfig = this.pageModel.get('_pageIncompletePrompt');
+    if (pipConfig && pipConfig._buttons) {
+      promptObject.title = pipConfig.title;
+      promptObject.body = pipConfig.message;
+      promptObject._classes = pipConfig._classes;
+      promptObject._prompts[0].promptText = pipConfig._buttons.yes;
+      promptObject._prompts[1].promptText = pipConfig._buttons.no;
+    }
+
+    this.listenToOnce(Adapt, 'notify:cancelled', this.onLeaveCancel);
+    Adapt.trigger('notify:prompt', promptObject);
+    this.inPopup = true;
+  }
+
+  isEnabled() {
+    if (!location._currentId) return false;
+    if (!this.handleRoute) return false;
+    if (!this.inPage) return false;
+    if (this.inPopup) return false;
+    if (this.isChangingLanguage) return false;
+
+    switch (location._contentType) {
+      case 'menu': case 'course':
+        this.inPage = false;
+        return false;
+    }
+
+    const pageModel = data.findById(location._currentId);
+    if (pageModel.get('_isOptional')) return false;
+
+    const isEnabledForCourse = this.model && !!this.model._isEnabled;
+    const isEnabledForPage = pageModel.get('_pageIncompletePrompt') && !!pageModel.get('_pageIncompletePrompt')._isEnabled;
+    return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
+  }
+
+  enableRouterNavigation(value) {
+    router.set('_canNavigate', value, { pluginName: this._pageIncompletePrompt });
+  }
+
+}
+
+export default new PageIncompletePrompt();
