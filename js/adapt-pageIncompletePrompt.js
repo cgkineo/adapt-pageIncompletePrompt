@@ -1,7 +1,7 @@
 import Adapt from 'core/js/adapt';
 import data from 'core/js/data';
-import device from 'core/js/device';
 import location from 'core/js/location';
+import notify from 'core/js/notify';
 import router from 'core/js/router';
 
 class PageIncompletePrompt extends Backbone.Controller {
@@ -121,7 +121,7 @@ class PageIncompletePrompt extends Backbone.Controller {
     }
 
     this.listenToOnce(Adapt, 'notify:cancelled', this.onLeaveCancel);
-    Adapt.trigger('notify:prompt', promptObject);
+    notify.prompt(promptObject);
     this.inPopup = true;
   }
 
