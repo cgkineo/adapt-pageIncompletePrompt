@@ -94,17 +94,6 @@ class PageIncompletePrompt extends Backbone.Controller {
     this.showPrompt();
   }
 
-  onAccessibilityToggle() {
-    if (device.touch) {
-      // Ignore toggle. Accessibility is always on for touch devices
-      this._ignoreAccessibilityNavigation = false;
-      return;
-    }
-
-    // Skip renavigate for accessibility on desktop
-    this._ignoreAccessibilityNavigation = true;
-  }
-
   showPrompt() {
     // Standard prompt settings (from course.json)
     const promptObject = {
