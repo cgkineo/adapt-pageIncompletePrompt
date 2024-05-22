@@ -26,10 +26,6 @@ class PageIncompletePrompt extends Backbone.Controller {
       'pageIncompletePrompt:cancel': this.onLeaveCancel,
       'router:navigate': this.onRouterNavigate
     });
-
-    this.listenToOnce(Adapt, 'app:dataLoaded', function() {
-      this.listenTo(Adapt, 'accessibility:toggle', this.onAccessibilityToggle);
-    });
   }
 
   /**
@@ -92,11 +88,6 @@ class PageIncompletePrompt extends Backbone.Controller {
       const model = data.findById(id);
       const parent = model && model.findAncestor('contentObjects');
       if (parent && (parent.get('_id') === this.pageModel.get('_id'))) return;
-    }
-
-    if (this._ignoreAccessibilityNavigation) {
-      this._ignoreAccessibilityNavigation = false;
-      return;
     }
 
     this.enableRouterNavigation(false);
