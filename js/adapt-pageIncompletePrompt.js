@@ -39,9 +39,9 @@ class PageIncompletePrompt extends Backbone.Controller {
   onLanguageChanging() {
     this.isChangingLanguage = true;
 
-    Adapt.once('router:page', function() {
+    Adapt.once('router:page', () => {
       this.isChangingLanguage = false;
-    }.bind(this));
+    });
   }
 
   get courseConfig() {
