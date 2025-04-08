@@ -1,4 +1,4 @@
-import { describe, whereFromPlugin, mutateContent, checkContent, updatePlugin, getCourse } from 'adapt-migrations';
+import { describe, whereFromPlugin, mutateContent, checkContent, updatePlugin, getCourse, testStopWhere, testSuccessWhere } from 'adapt-migrations';
 
 describe('Page Incomplete Prompt - v2.0.8 to v2.1.0', async () => {
   let course, coursePIP;
@@ -14,4 +14,25 @@ describe('Page Incomplete Prompt - v2.0.8 to v2.1.0', async () => {
     return true;
   });
   updatePlugin('Page Incomplete Prompt - update to v2.1.0', { name: 'adapt-pageIncompletePrompt', version: '2.1.0', framework: '>=3.3' });
+
+  testSuccessWhere('page incomplete prompt with empty course', {
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.0.8' }],
+    content: [
+      { _id: 'c-100', _component: 'mcq', _pageIncompletePrompt: {} },
+      { _id: 'c-105', _component: 'mcq' },
+      { _type: 'course' }
+    ]
+  });
+
+  testSuccessWhere('page incomplete prompt with empty course globals', {
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.0.8' }],
+    content: [
+      { _id: 'c-100', _component: 'mcq', _pageIncompletePrompt: {} },
+      { _type: 'course', _pageIncompletePrompt: {}, _globals: { _extensions: { _pageIncompletePrompt: {} } } }
+    ]
+  });
+
+  testStopWhere('incorrect version', {
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.1.0' }]
+  });
 });
