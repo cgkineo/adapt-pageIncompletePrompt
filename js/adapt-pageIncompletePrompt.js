@@ -75,6 +75,10 @@ class PageIncompletePrompt extends Backbone.Controller {
   onRouterNavigate(routeArguments) {
     if (!this.isEnabled() || this.pageModel.get('_isComplete')) return;
 
+    // Allow nav to assisted learning revision page
+    const routePath = routeArguments[0] || '';
+    if (routePath === 'assistedlearning') return;
+
     this.href = /#/.test(window.location.href) ?
       window.location.href :
       window.location.href + '#';
