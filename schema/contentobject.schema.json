@@ -16,8 +16,7 @@
             "_isEnabled": {
               "type": "boolean",
               "title": "Enabled?",
-              "description": "Whether Page Incomplete Prompt is enabled for this page or not. This is setting is only required if you want this page to override the global setting.",
-              "default": true
+              "description": "Whether Page Incomplete Prompt is enabled for this page or not. This setting is only required if you want this page to override the global setting."
             }
           }
         }

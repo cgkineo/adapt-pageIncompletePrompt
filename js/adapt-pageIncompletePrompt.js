@@ -1,23 +1,9 @@
 import Adapt from 'core/js/adapt';
 import data from 'core/js/data';
 import location from 'core/js/location';
+import logging from 'core/js/logging';
 import notify from 'core/js/notify';
 import router from 'core/js/router';
-
-/**
- * Fallback prompt settings, mirroring the defaults declared in
- * schema/course.schema.json. Used when a course reaches runtime without a
- * complete `_pageIncompletePrompt` configuration.
- */
-const DEFAULTS = {
-  title: 'Page incomplete',
-  message: 'Are you sure you would like to leave?',
-  _classes: '',
-  _buttons: {
-    yes: 'Yes',
-    no: 'No'
-  }
-};
 
 class PageIncompletePrompt extends Backbone.Controller {
   initialize() {
@@ -109,27 +95,23 @@ class PageIncompletePrompt extends Backbone.Controller {
   }
 
   /**
-   * Resolves the prompt settings from page-level overrides, course-level
-   * settings and plugin defaults, in that order of precedence. Always returns
-   * a complete prompt object, so navigation is never locked for a prompt that
-   * cannot be built.
-   * @returns {Object} A notify prompt configuration.
+   * Builds the prompt from the course-level settings. Returns null when either
+   * button label is missing, as the learner could not answer the prompt.
+   * @returns {Object|null} A notify prompt configuration.
    */
   getPromptObject() {
-    const courseConfig = this.courseConfig || {};
-    const pageConfig = this.pageModel.get('_pageIncompletePrompt') || {};
-    const buttons = { ...DEFAULTS._buttons, ...courseConfig._buttons, ...pageConfig._buttons };
-    const classes = pageConfig._classes ?? courseConfig._classes ?? DEFAULTS._classes;
+    const { title, message, _classes = '', _buttons } = this.courseConfig ?? {};
+    if (!_buttons?.yes || !_buttons?.no) return null;
 
     return {
-      title: pageConfig.title ?? courseConfig.title ?? DEFAULTS.title,
-      body: pageConfig.message ?? courseConfig.message ?? DEFAULTS.message,
-      _classes: `is-pageincompleteprompt ${classes}`.trim(),
+      title,
+      body: message,
+      _classes: `is-pageincompleteprompt ${_classes}`.trim(),
       _prompts: [{
-        promptText: buttons.yes,
+        promptText: _buttons.yes,
         _callbackEvent: 'pageIncompletePrompt:leavePage'
       }, {
-        promptText: buttons.no,
+        promptText: _buttons.no,
         _callbackEvent: 'pageIncompletePrompt:cancel'
       }],
       _showIcon: true
@@ -137,9 +119,13 @@ class PageIncompletePrompt extends Backbone.Controller {
   }
 
   showPrompt() {
-    // Build the prompt before disabling navigation, so a failure here can never
-    // leave the router locked with no prompt on screen.
+    // Build the prompt before disabling navigation, so a course that cannot
+    // show one never leaves the router locked with no prompt on screen.
     const promptObject = this.getPromptObject();
+    if (!promptObject) {
+      logging.warnOnce('PageIncompletePrompt: course _pageIncompletePrompt._buttons.yes and _buttons.no must be set; no prompt shown');
+      return;
+    }
 
     this.enableRouterNavigation(false);
 

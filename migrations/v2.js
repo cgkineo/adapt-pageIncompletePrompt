@@ -59,7 +59,7 @@ describe('Page Incomplete Prompt - v@@CURRENT_VERSION to v@@RELEASE_VERSION', as
   let course, coursePIP;
   whereFromPlugin('Page Incomplete Prompt - from v@@CURRENT_VERSION', { name: 'adapt-pageIncompletePrompt', version: '<@@RELEASE_VERSION' });
   whereContent('Page Incomplete Prompt - has course _pageIncompletePrompt', async content => {
-    return content.some(item => item._type === 'course' && item._pageIncompletePrompt);
+    return Boolean(getCourse()?._pageIncompletePrompt);
   });
   // The v2.1.0 migration above creates _pageIncompletePrompt on every course,
   // including courses that never used the plugin, so only the display settings

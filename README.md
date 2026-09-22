@@ -4,7 +4,7 @@
 
 ## Settings Overview
 
-**Page Incomplete Prompt** can be configured globally in *course.json*, or per page in *contentObjects.json*. The *contentObjects.json* setting will override whatever is in *course.json*.
+**Page Incomplete Prompt** is configured globally in *course.json*. Individual pages can switch the prompt on or off in *contentObjects.json*, which overrides the *course.json* `_isEnabled` setting. The prompt title, message, classes and button labels are set in *course.json* only.
 
 ## Attributes
 
@@ -56,7 +56,7 @@ The Page Incomplete Prompt object contains the following settings:
 
 #### **\_isEnabled** (boolean)
 
-Controls whether the extension is enabled for the page
+Controls whether the extension is enabled for the page. Leave unset to use the *course.json* setting.
 
 ## Limitations
 
