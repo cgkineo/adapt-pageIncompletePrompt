@@ -16,7 +16,7 @@
             "_isEnabled": {
               "type": "boolean",
               "title": "Enabled?",
-              "description": "Whether Page Incomplete Prompt is enabled for this page or not. This setting is only required if you want this page to override the global setting."
+              "description": "Whether Page Incomplete Prompt is enabled for this page. Leave unticked to use the course setting. Once ticked, unticking it switches the prompt off for this page rather than returning to the course setting."
             }
           }
         }

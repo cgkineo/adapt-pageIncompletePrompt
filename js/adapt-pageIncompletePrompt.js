@@ -97,16 +97,16 @@ class PageIncompletePrompt extends Backbone.Controller {
   /**
    * Builds the prompt from the course-level settings. Returns null when either
    * button label is missing, as the learner could not answer the prompt.
-   * @returns {Object|null} A notify prompt configuration.
+   * @returns {Object|null} The argument for `notify.prompt()`, or null.
    */
   getPromptObject() {
-    const { title, message, _classes = '', _buttons } = this.courseConfig ?? {};
+    const { title, message, _classes, _buttons } = this.courseConfig ?? {};
     if (!_buttons?.yes || !_buttons?.no) return null;
 
     return {
       title,
       body: message,
-      _classes: `is-pageincompleteprompt ${_classes}`.trim(),
+      _classes: `is-pageincompleteprompt ${_classes ?? ''}`.trim(),
       _prompts: [{
         promptText: _buttons.yes,
         _callbackEvent: 'pageIncompletePrompt:leavePage'
@@ -118,6 +118,11 @@ class PageIncompletePrompt extends Backbone.Controller {
     };
   }
 
+  /**
+   * Shows the prompt and locks navigation until the learner answers it. If the
+   * prompt cannot be built or rendered, logs why and leaves navigation
+   * unlocked, so the route continues without a prompt.
+   */
   showPrompt() {
     // Build the prompt before disabling navigation, so a course that cannot
     // show one never leaves the router locked with no prompt on screen.
@@ -134,12 +139,19 @@ class PageIncompletePrompt extends Backbone.Controller {
       notify.prompt(promptObject);
       this.inPopup = true;
     } catch (error) {
+      // Not rethrown: an error escaping 'router:navigate' would skip the router's
+      // own cancel path and leave the URL changed with the old page on screen.
       this.stopListening(Adapt, 'notify:cancelled');
       this.enableRouterNavigation(true);
-      throw error;
+      logging.error('PageIncompletePrompt: prompt could not be shown', error);
     }
   }
 
+  /**
+   * Whether leaving the current page should show the prompt. A page-level
+   * `_isEnabled` overrides the course setting; when absent, the page inherits it.
+   * @returns {boolean}
+   */
   isEnabled() {
     if (!location._currentId) return false;
     if (!this.handleRoute) return false;
@@ -156,12 +168,9 @@ class PageIncompletePrompt extends Backbone.Controller {
     const pageModel = data.findById(location._currentId);
     if (pageModel.get('_isOptional')) return false;
 
-    // A page-level _isEnabled is an explicit override; an absent one inherits the
-    // course setting. Uses `??` rather than `||` so an explicit false still wins,
-    // and avoids coercing an absent value to false - which would make a page
-    // config of `{}` read as "disabled" instead of "inherit".
+    // `??` so an explicit page false still wins over an enabled course
     const pageOverride = pageModel.get('_pageIncompletePrompt')?._isEnabled;
-    return pageOverride ?? Boolean(this.courseConfig?._isEnabled);
+    return Boolean(pageOverride ?? this.courseConfig?._isEnabled);
   }
 
   enableRouterNavigation(value) {
