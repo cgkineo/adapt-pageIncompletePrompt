@@ -1,9 +1,9 @@
 import { describe, whereFromPlugin, whereContent, mutateContent, checkContent, updatePlugin, getCourse, testStopWhere, testSuccessWhere } from 'adapt-migrations';
 import _ from 'lodash';
 
-describe('Page Incomplete Prompt - v@@CURRENT_VERSION to v@@RELEASE_VERSION', async () => {
+describe('Page Incomplete Prompt - v2.2.0 to v3.0.0', async () => {
   let course, coursePIP, originalPIP;
-  whereFromPlugin('Page Incomplete Prompt - from v@@CURRENT_VERSION', { name: 'adapt-pageIncompletePrompt', version: '<@@RELEASE_VERSION' });
+  whereFromPlugin('Page Incomplete Prompt - from v2.2.0', { name: 'adapt-pageIncompletePrompt', version: '<3.0.0' });
   whereContent('Page Incomplete Prompt - has course _pageIncompletePrompt', async content => {
     course = getCourse();
     coursePIP = course?._pageIncompletePrompt;
@@ -50,10 +50,10 @@ describe('Page Incomplete Prompt - v@@CURRENT_VERSION to v@@RELEASE_VERSION', as
 
     return true;
   });
-  updatePlugin('Page Incomplete Prompt - update to v@@RELEASE_VERSION', { name: 'adapt-pageIncompletePrompt', version: '@@RELEASE_VERSION', framework: '>=5.19.1' });
+  updatePlugin('Page Incomplete Prompt - update to v3.0.0', { name: 'adapt-pageIncompletePrompt', version: '3.0.0', framework: '>=5.19.1' });
 
   testSuccessWhere('page incomplete prompt missing buttons and copy', {
-    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '@@CURRENT_VERSION' }],
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.2.0' }],
     content: [
       { _id: 'c-100', _component: 'text' },
       { _type: 'course', _pageIncompletePrompt: { _classes: '' } }
@@ -61,7 +61,7 @@ describe('Page Incomplete Prompt - v@@CURRENT_VERSION to v@@RELEASE_VERSION', as
   });
 
   testSuccessWhere('page incomplete prompt with empty course setting', {
-    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '@@CURRENT_VERSION' }],
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.2.0' }],
     content: [
       { _id: 'c-100', _component: 'text' },
       { _type: 'course', _pageIncompletePrompt: {} }
@@ -69,7 +69,7 @@ describe('Page Incomplete Prompt - v@@CURRENT_VERSION to v@@RELEASE_VERSION', as
   });
 
   testSuccessWhere('page incomplete prompt with one button label', {
-    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '@@CURRENT_VERSION' }],
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.2.0' }],
     content: [
       { _id: 'c-100', _component: 'text' },
       { _type: 'course', _pageIncompletePrompt: { _isEnabled: false, _buttons: { yes: 'Leave' } } }
@@ -77,7 +77,7 @@ describe('Page Incomplete Prompt - v@@CURRENT_VERSION to v@@RELEASE_VERSION', as
   });
 
   testSuccessWhere('page incomplete prompt with null buttons', {
-    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '@@CURRENT_VERSION' }],
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.2.0' }],
     content: [
       { _id: 'c-100', _component: 'text' },
       { _type: 'course', _pageIncompletePrompt: { _buttons: null } }
@@ -85,7 +85,7 @@ describe('Page Incomplete Prompt - v@@CURRENT_VERSION to v@@RELEASE_VERSION', as
   });
 
   testSuccessWhere('page incomplete prompt already fully configured', {
-    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '@@CURRENT_VERSION' }],
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.2.0' }],
     content: [
       { _id: 'c-100', _component: 'text' },
       {
@@ -102,11 +102,11 @@ describe('Page Incomplete Prompt - v@@CURRENT_VERSION to v@@RELEASE_VERSION', as
   });
 
   testStopWhere('incorrect version', {
-    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '@@RELEASE_VERSION' }]
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '3.0.0' }]
   });
 
   testStopWhere('no course _pageIncompletePrompt', {
-    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '@@CURRENT_VERSION' }],
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.2.0' }],
     content: [
       { _id: 'c-100', _component: 'text' },
       { _type: 'course' }
@@ -114,7 +114,7 @@ describe('Page Incomplete Prompt - v@@CURRENT_VERSION to v@@RELEASE_VERSION', as
   });
 
   testStopWhere('course _pageIncompletePrompt is not an object', {
-    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '@@CURRENT_VERSION' }],
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.2.0' }],
     content: [
       { _id: 'c-100', _component: 'text' },
       { _type: 'course', _pageIncompletePrompt: true }
@@ -122,7 +122,7 @@ describe('Page Incomplete Prompt - v@@CURRENT_VERSION to v@@RELEASE_VERSION', as
   });
 
   testStopWhere('missing course object', {
-    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '@@CURRENT_VERSION' }],
+    fromPlugins: [{ name: 'adapt-pageIncompletePrompt', version: '2.2.0' }],
     content: [
       { _id: 'c-100', _component: 'text' }
     ]
