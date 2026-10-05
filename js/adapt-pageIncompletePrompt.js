@@ -1,6 +1,7 @@
 import Adapt from 'core/js/adapt';
 import data from 'core/js/data';
 import location from 'core/js/location';
+import logging from 'core/js/logging';
 import notify from 'core/js/notify';
 import router from 'core/js/router';
 
@@ -90,41 +91,67 @@ class PageIncompletePrompt extends Backbone.Controller {
       if (parent && (parent.get('_id') === this.pageModel.get('_id'))) return;
     }
 
-    this.enableRouterNavigation(false);
     this.showPrompt();
   }
 
-  showPrompt() {
-    // Standard prompt settings (from course.json)
-    const promptObject = {
-      title: this.courseConfig.title,
-      body: this.courseConfig.message,
-      _classes: 'is-pageincompleteprompt ' + (this.courseConfig._classes || ''),
+  /**
+   * Builds the prompt from the course-level settings. Returns null when either
+   * button label is missing, as the learner could not answer the prompt.
+   * @returns {Object|null} The argument for `notify.prompt()`, or null.
+   */
+  getPromptObject() {
+    const { title, message, _classes, _buttons } = this.courseConfig ?? {};
+    if (!_buttons?.yes || !_buttons?.no) return null;
+
+    return {
+      title,
+      body: message,
+      _classes: `is-pageincompleteprompt ${_classes ?? ''}`.trim(),
       _prompts: [{
-        promptText: this.courseConfig._buttons.yes,
+        promptText: _buttons.yes,
         _callbackEvent: 'pageIncompletePrompt:leavePage'
       }, {
-        promptText: this.courseConfig._buttons.no,
+        promptText: _buttons.no,
         _callbackEvent: 'pageIncompletePrompt:cancel'
       }],
       _showIcon: true
     };
-
-    // Override with page-specific settings
-    const pipConfig = this.pageModel.get('_pageIncompletePrompt');
-    if (pipConfig && pipConfig._buttons) {
-      promptObject.title = pipConfig.title;
-      promptObject.body = pipConfig.message;
-      promptObject._classes = pipConfig._classes;
-      promptObject._prompts[0].promptText = pipConfig._buttons.yes;
-      promptObject._prompts[1].promptText = pipConfig._buttons.no;
-    }
-
-    this.listenToOnce(Adapt, 'notify:cancelled', this.onLeaveCancel);
-    notify.prompt(promptObject);
-    this.inPopup = true;
   }
 
+  /**
+   * Shows the prompt and locks navigation until the learner answers it. If the
+   * prompt cannot be built or rendered, logs why and leaves navigation
+   * unlocked, so the route continues without a prompt.
+   */
+  showPrompt() {
+    // Build the prompt before disabling navigation, so a course that cannot
+    // show one never leaves the router locked with no prompt on screen.
+    const promptObject = this.getPromptObject();
+    if (!promptObject) {
+      logging.warnOnce('PageIncompletePrompt: course _pageIncompletePrompt._buttons.yes and _buttons.no must be set; no prompt shown');
+      return;
+    }
+
+    this.enableRouterNavigation(false);
+
+    try {
+      this.listenToOnce(Adapt, 'notify:cancelled', this.onLeaveCancel);
+      notify.prompt(promptObject);
+      this.inPopup = true;
+    } catch (error) {
+      // Not rethrown: an error escaping 'router:navigate' would skip the router's
+      // own cancel path and leave the URL changed with the old page on screen.
+      this.stopListening(Adapt, 'notify:cancelled');
+      this.enableRouterNavigation(true);
+      logging.error('PageIncompletePrompt: prompt could not be shown', error);
+    }
+  }
+
+  /**
+   * Whether leaving the current page should show the prompt. A page-level
+   * `_isEnabled` overrides the course setting; when absent, the page inherits it.
+   * @returns {boolean}
+   */
   isEnabled() {
     if (!location._currentId) return false;
     if (!this.handleRoute) return false;
@@ -141,9 +168,9 @@ class PageIncompletePrompt extends Backbone.Controller {
     const pageModel = data.findById(location._currentId);
     if (pageModel.get('_isOptional')) return false;
 
-    const isEnabledForCourse = this.courseConfig && Boolean(this.courseConfig._isEnabled);
-    const isEnabledForPage = pageModel.get('_pageIncompletePrompt') && !!pageModel.get('_pageIncompletePrompt')._isEnabled;
-    return (isEnabledForCourse && isEnabledForPage !== false) || isEnabledForPage;
+    // `??` so an explicit page false still wins over an enabled course
+    const pageOverride = pageModel.get('_pageIncompletePrompt')?._isEnabled;
+    return Boolean(pageOverride ?? this.courseConfig?._isEnabled);
   }
 
   enableRouterNavigation(value) {

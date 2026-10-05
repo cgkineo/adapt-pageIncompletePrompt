@@ -99,7 +99,7 @@
                   "title": "Enabled?",
                   "inputType": "Checkbox",
                   "validators": [],
-                  "help": "Whether Page Incomplete Prompt is enabled for this page or not. This is setting is only required if you want this page to override the global setting."
+                  "help": "Whether Page Incomplete Prompt is enabled for this page or not. This setting is only required if you want this page to override the global setting."
                 }
               }
             }
